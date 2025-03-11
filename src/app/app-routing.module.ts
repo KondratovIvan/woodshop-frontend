@@ -9,6 +9,7 @@ import { AdminDashboardComponent } from './components/admin-dashboard/admin-dash
 import { AddProductComponent } from './components/add-product/add-product.component';
 import { EditProductComponent } from './components/edit-product/edit-product.component';
 import { AuthGuard } from './security/guards/sec.guard';
+import { CheckoutComponent } from './components/checkout/checkout.component';
 
 const routes: Routes = [
   {
@@ -21,7 +22,8 @@ const routes: Routes = [
   //   path: 'cart',
   //   component: ShoppingCartComponent,
   // },
-  { path: 'product-details', component: ProductDetailsComponent },
+  {path: 'cart-checkout', component: CheckoutComponent, canActivate: [AuthGuard], data: { roles: ['USER', 'ADMIN'] }},
+  { path: 'product-details', component: ProductDetailsComponent,  canActivate: [AuthGuard],data: { roles: ['USER', 'ADMIN'] }},
   { path: 'searched-products', component: SearchedProductsListComponent },
   { path: 'contact', component: ContactComponent },
   {path : "admin" , component:AdminDashboardComponent , canActivate:[AuthGuard]  , data : {roles : ['ADMIN']}},

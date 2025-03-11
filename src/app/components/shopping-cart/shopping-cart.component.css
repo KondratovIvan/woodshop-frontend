@@ -3,3 +3,8 @@
   display: flex;
   flex-direction: column;
 }
+
+.checkout-btn {
+  margin-top: 20px;
+  align-self: flex-end;
+}

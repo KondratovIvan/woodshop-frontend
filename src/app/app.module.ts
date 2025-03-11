@@ -45,6 +45,8 @@ import {ProductItemEffect} from "./ngrx/Product-item-State/productItem.effects";
 import { EditProductComponent } from './components/edit-product/edit-product.component';
 import {KeycloakAngularModule, KeycloakService} from "keycloak-angular";
 import {environment} from "../environments/environment";
+import { CheckoutComponent } from './components/checkout/checkout.component';
+import { FormsModule } from '@angular/forms';
 export function initKeyClock(kcSecurity : KeycloakService) {
   return () =>
     kcSecurity.init({
@@ -96,6 +98,7 @@ export function initKeyClock(kcSecurity : KeycloakService) {
     AddProductComponent,
     ProductPickedImagesComponent,
     EditProductComponent,
+    CheckoutComponent
   ],
   imports: [
     BrowserModule,
@@ -107,6 +110,7 @@ export function initKeyClock(kcSecurity : KeycloakService) {
     EffectsModule.forRoot([ProductsEffects , SelectedProductEffects , ShoppingCartEffect , ProductItemEffect]),
     StoreDevtoolsModule.instrument() ,
     KeycloakAngularModule,
+    FormsModule
   ],
   providers: [{provide : APP_INITIALIZER , deps:[KeycloakService] , useFactory:initKeyClock , multi:true}],
   bootstrap: [AppComponent]

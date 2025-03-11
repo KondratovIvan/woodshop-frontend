@@ -6,7 +6,8 @@
         <ul class="custom-breadcrumb">
           <li><a href="index.html">Home</a> <span class="divider">/</span></li>
           <li>
-            <a href="products.html">Products</a> <span class="divider">/</span>
+            <a href="/searched-products">Products</a>
+            <span class="divider">/</span>
           </li>
           <li class="active">Product Details</li>
         </ul>
@@ -20,6 +21,58 @@
           <app-product-item-addetional-info
             [product]="state.product"
           ></app-product-item-addetional-info>
+          <div>
+            <div class="reviews-section">
+              <h3 class="review-title">Leave a Review</h3>
+  
+              <textarea
+                [(ngModel)]="reviewText"
+                placeholder="Write your review here..."
+                class="review-input"
+              ></textarea>
+  
+              <div class="rating">
+                <span
+                  *ngFor="let star of stars; let i = index"
+                  (click)="setRating(i)"
+                >
+                  <img
+                    [src]="getStarImage(i)"
+                    alt="star icon"
+                    style="width: 20px; height: 20px"
+                  />
+                </span>
+              </div>
+  
+              <button class="btn btn-submit-review" (click)="submitReview()">
+                Submit Review
+              </button>
+            </div>
+  
+            <ng-container *ngIf="reviews.length > 0">
+              <div class="reviews-list">
+                <h3 class="reviews-title">Customer Reviews</h3>
+                <div *ngFor="let review of reviews" class="review-item">
+                  <div class="review-header">
+                    <span>
+                      <strong>{{ review.firstName }} {{ review.lastName }}</strong>
+                    </span>
+                    <div class="review-rating">
+                      <span *ngFor="let star of stars; let i = index">
+                        <img
+                          [src]="getStarImage(i, review.rating)"
+                          alt="star icon"
+                          style="width: 15px; height: 15px"
+                        />
+                      </span>
+                    </div>
+                  </div>
+                  <p class="review-text">{{ review.reviewText }}</p>
+                  <p class="review-date">{{ review.date | date : "short" }}</p>
+                </div>
+              </div>
+            </ng-container>
+          </div>
         </ng-container>
       </div>
     </div>

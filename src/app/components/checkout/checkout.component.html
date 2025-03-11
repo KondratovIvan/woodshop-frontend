@@ -1,0 +1,113 @@
+<div>
+    <div class="container">
+      <div class="row">
+        <app-sidecar></app-sidecar>
+        <div class="checkout-container-container">
+          <ul class="custom-breadcrumb">
+            <li><a href="index.html">Home</a> <span class="divider">/</span></li>
+            <li>
+              <a href="/cart">Cart</a>
+              <span class="divider">/</span>
+            </li>
+            <li class="active">Checkout</li>
+          </ul>
+          <ng-container *ngIf="shoppingCart$">
+          <div class="checkout-container">
+            <h2 class="checkout-title">Checkout</h2>
+            <form [formGroup]="checkoutForm">
+              <label class="checkout-label">
+                Name:
+                <input
+                  class="checkout-input"
+                  formControlName="name"
+                  type="text"
+                  required
+                />
+                <div *ngIf="getControlError('name')" class="error-message">
+                  {{ getControlError("name") }}
+                </div>
+              </label>
+              <label class="checkout-label">
+                Surname:
+                <input
+                  class="checkout-input"
+                  formControlName="surname"
+                  type="text"
+                  required
+                />
+                <div *ngIf="getControlError('surname')" class="error-message">
+                  {{ getControlError("surname") }}
+                </div>
+              </label>
+              <label class="checkout-label">
+                City:
+                <input
+                  class="checkout-input"
+                  formControlName="city"
+                  type="text"
+                  required
+                />
+                <div *ngIf="getControlError('city')" class="error-message">
+                  {{ getControlError("city") }}
+                </div>
+              </label>
+              <label class="checkout-label">
+                Telephone Number:
+                <input
+                  class="checkout-input"
+                  formControlName="telephoneNumber"
+                  type="text"
+                  required
+                />
+                <div
+                  *ngIf="getControlError('telephoneNumber')"
+                  class="error-message"
+                >
+                  {{ getControlError("telephoneNumber") }}
+                </div>
+              </label>
+              <label class="checkout-label">
+                Nova Poshta Office Number:
+                <input
+                  class="checkout-input"
+                  formControlName="postOfficeNumber"
+                  required
+                />
+                <div
+                  *ngIf="getControlError('postOfficeNumber')"
+                  class="error-message"
+                >
+                  {{ getControlError("postOfficeNumber") }}
+                </div>
+              </label>
+              <div class="checkout-buttons">
+                <button
+                  class="btn checkout-button"
+                  type="submit"
+                  [disabled]="checkoutForm.invalid"
+                  (click)="payOnline()"
+                >
+                  Pay online
+                </button>
+                <button
+                  class="checkout-button btn checkout-btn-wood"
+                  type="submit"
+                  [disabled]="checkoutForm.invalid"
+                  (click)="payByCash()"
+                >
+                  Pay by cash
+                </button>
+              </div>
+            </form>
+          </div>
+          </ng-container>
+          <!-- <ng-container ngIf="!shoppingCart$">
+          <div class="no-items">
+            <img src="assets/img/no-items.svg" alt="error image" />
+            <h1>There are no items in your cart</h1>
+          </div>
+          </ng-container> -->
+        </div>
+      </div>
+    </div>
+  </div>
