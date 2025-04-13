@@ -11,8 +11,7 @@
           >
           <ng-container *ngIf="state.shoppingCart">
             <span *ngIf="state.shoppingCart.items[0].product" class="price">
-              {{ state.shoppingCart.items[0].product.productPrice.symbol
-              }}{{ shoppingCartService.calcTotalPrice(state.shoppingCart) }}
+              {{ shoppingCartService.calcTotalPrice(state.shoppingCart) }} {{ state.shoppingCart.items[0].product.productPrice.currency }}
             </span>
           </ng-container>
         </ng-container>

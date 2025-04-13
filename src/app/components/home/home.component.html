@@ -40,14 +40,41 @@
   </div>
 </div>
 
-<!-- <div>
-  <div class="container">
-    <div class="row">
-      <app-sidecar></app-sidecar>
-      <div class="right">
-        <app-selected-new-products></app-selected-new-products>
-        <app-products-list></app-products-list>
-      </div>
+<button class="sticky-button" (click)="openModal()">
+  <img src="assets/img/wood-calendar.jpg" alt="wood calendar icon" />
+</button>
+
+<div class="modal-backdrop" *ngIf="isModalOpen" (click)="closeModal()">
+  <div class="modal-window" (click)="$event.stopPropagation()">
+    <div class="modal-window_header">
+      <h3>Find out your tree horoscope</h3>
+      <button class="close-button" (click)="closeModal()">×</button>
+    </div>
+    <form class="wood-form" (ngSubmit)="calculateTreeHoroscope()">
+      <label for="birthDate" class="wood-label">Your birth date:</label>
+      <input
+        type="date"
+        id="birthDate"
+        class="wood-input"
+        [(ngModel)]="birthDate"
+        name="birthDate"
+        required
+      />
+      <button type="submit" class="wood-submit-button">
+        Find out the result
+      </button>
+    </form>
+    <div *ngIf="treeHoroscope" class="wood-result">
+      <h4>Your tree is: {{ treeHoroscope.name }}</h4>
+      <p>{{ treeHoroscope.description }}</p>
+      <img src="{{ treeHoroscope.image }}" alt="tree image" />
+      <button
+        type="button"
+        class="wood-submit-button"
+        (click)="onSearchByCategory(treeHoroscope.category)"
+      >
+        View items with your tree type
+      </button>
     </div>
   </div>
-</div> -->
+</div>

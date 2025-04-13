@@ -13,11 +13,15 @@
 
           <ng-container *ngSwitchCase="ProductStateEnum.LOADED">
             <app-searched-products-list-header
-              *ngIf="state.pageInfo"
-              [productsNumber]="state.pageInfo.totalElements"
+            *ngIf="state.pageInfo"
+            [productsNumber]="state.pageInfo.totalElements"
+            [minAvailablePrice]="minAvailablePrice"
+            [maxAvailablePrice]="maxAvailablePrice"
+            (sortChanged)="onSortChanged($event)"
+            (priceFilterChanged)="onPriceFilterChanged($event)"
+          >          
             ></app-searched-products-list-header>
-            <app-products-list [products]="state.products"></app-products-list>
-
+            <app-products-list [products]="displayedProducts"></app-products-list>
             <ng-container [ngSwitch]="state.fetchMethode">
               <ng-container *ngSwitchCase="fetchMethode.SEARCH_BY_KEYWORD">
                 <app-paggination
@@ -42,17 +46,3 @@
     </div>
   </div>
 </div>
-
-<!-- <div>
-  <div class="container">
-    <div class="row">
-      <app-sidecar> </app-sidecar>
-      <div class="searched-products-container">
-        <app-searched-products-list-header></app-searched-products-list-header>
-        <app-products-list></app-products-list>
-
-        <app-paggination> </app-paggination>
-      </div>
-    </div>
-  </div>
-</div> -->

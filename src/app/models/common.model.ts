@@ -16,15 +16,14 @@ export interface DeleteProductReq{
 }
 
 export enum Color {
-  Red = "Red",
-  Blue = "Blue",
-  Green = "Green",
-  Yellow = "Yellow",
+  CHESTNUT = "CHESTNUT",
+  TAUPE = "TAUPE",
+  UMBER = "UMBER",
 }
 
 export enum Currency {
-  DOLLAR = "DOLLAR",
-  MAD = "MAD",
+  UAH = "UAH",
+  USD = "USD",
   EUR = "EUR",
 
 }

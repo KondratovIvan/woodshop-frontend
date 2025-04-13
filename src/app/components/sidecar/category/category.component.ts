@@ -17,7 +17,7 @@ import {GetShoppingCartAction} from "../../../ngrx/ShoppingCartState/cart.action
 })
 export class CategoryComponent implements OnInit{
 
-  categories : string[] =  Object.values(ProductsCategory).map((color) => String(color));
+  categories: string[] = Object.values(ProductsCategory).map((item) => item.category);
   shoppingCart$? : Observable<ShoppingCartState>
   public readonly CartDataState = DataStateEnum ;
   constructor(private store:Store<any> , private router: Router , public shoppingCartService:ShoppingCartService , private secService: SecurityService) {

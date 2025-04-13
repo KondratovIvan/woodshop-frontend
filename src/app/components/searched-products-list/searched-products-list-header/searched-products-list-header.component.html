@@ -12,15 +12,25 @@
   <form >
     <div class="form-group">
       <label class="sort-label">Sort By </label>
-      <select class="sort-select">
-        <option>Product name A - Z</option>
-        <option>Product name Z - A</option>
-        <option>Product Stoke</option>
-        <option>Product Lowest price first</option>
+      <select class="sort-select" (change)="onSortChange($event)">
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+        <option value="date-newest">Date: Newest First</option>
+        <option value="date-oldest">Date: Oldest First</option>
+        <option value="popular">Popularity (Most Reviews)</option>
       </select>
     </div>
-  </form>
-</div>
+    <div class="form-group">
+      <label>Max Price: {{ selectedMaxPrice }}</label>
+      <input
+        type="range"
+        min="{{ minAvailablePrice }}"
+        [max]="maxAvailablePrice"
+        [(ngModel)]="selectedMaxPrice"
+        name="priceRange"
+        (change)="onRangeChange()"
+      />
+    </div>
 
 <!-- <div>
   <ul class="custom-breadcrumb">
