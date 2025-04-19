@@ -47,6 +47,15 @@ import {KeycloakAngularModule, KeycloakService} from "keycloak-angular";
 import {environment} from "../environments/environment";
 import { CheckoutComponent } from './components/checkout/checkout.component';
 import { FormsModule } from '@angular/forms';
+import { DeliveryComponent } from './components/footer/delivery/delivery.component';
+import { FaqComponent } from './components/footer/faq/faq.component';
+import { LegalNoticeComponent } from './components/footer/legal-notice/legal-notice.component';
+import { PartnerComponent } from './components/footer/partner/partner.component';
+import { PaymentsComponent } from './components/footer/payments/payments.component';
+import { RecommendationsComponent } from './components/footer/recommendations/recommendations.component';
+import { RefundComponent } from './components/footer/refund/refund.component';
+import { SupportComponent } from './components/footer/support/support.component';
+import { TermsComponent } from './components/footer/terms/terms.component';
 export function initKeyClock(kcSecurity : KeycloakService) {
   return () =>
     kcSecurity.init({
@@ -98,7 +107,16 @@ export function initKeyClock(kcSecurity : KeycloakService) {
     AddProductComponent,
     ProductPickedImagesComponent,
     EditProductComponent,
-    CheckoutComponent
+    CheckoutComponent,
+    DeliveryComponent,
+    FaqComponent,
+    LegalNoticeComponent,
+    PartnerComponent,
+    PaymentsComponent,
+    RecommendationsComponent,
+    RefundComponent,
+    SupportComponent,
+    TermsComponent
   ],
   imports: [
     BrowserModule,

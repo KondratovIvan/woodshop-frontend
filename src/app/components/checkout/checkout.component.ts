@@ -91,78 +91,48 @@ export class CheckoutComponent {
   }
 
   createMonopayInvoice() {
-    const url = 'https://api.monobank.ua/api/merchant/invoice/create';
-
-    this.shoppingCart$?.subscribe((state) => {
-        const totalPrice = this.shoppingCartService.calcTotalPrice(state.shoppingCart?? { items: [], customerId:"0", id:"0" });
-        const body = {
-            amount: totalPrice,
-              ccy: 980, // 980 - uah, 840 - usd.
-              merchantPaymInfo: {
-                reference: Date.now(),
-                destination: 'Your order in the WoodShop',
-                comment: 'Your order',
-              basketOrder: state.shoppingCart?.items.map((item) => ({
+    this.shoppingCart$?.subscribe(state => {
+      const totalPriceUAH = this.shoppingCartService.calcTotalPrice(state.shoppingCart ?? { items: [], customerId: '0', id: '0' });
+      const totalPricePennies = Math.round(totalPriceUAH * 100);
+      const body = {
+        amount: totalPricePennies,
+        ccy: 980,
+        merchantPaymInfo: {
+          reference: Date.now(),
+          destination: 'Your order in the WoodShop',
+          comment: 'Your order',
+          basketOrder: state.shoppingCart?.items.map(item => {
+            const pricePennies = Math.round(item.product.productPrice.price * 100);
+            return {
               name: item.product.name,
               qty: item.quantity,
-              sum: item.product.productPrice.price * 100,
-              total: item.product.productPrice.price * item.quantity * 100,
+              sum: pricePennies,
+              total: pricePennies * item.quantity,
               icon: item.product.productImagesBas64[0],
               unit: 'шт.',
-              code: item.product.name,
-            }))
-              },
-              redirectUrl: 'http://localhost:4200/home',
-              validity: 3600,
-              paymentType: null,
+              code: item.product.name
             };
-        // const body = {
-        //     amount: 4200,
-        //     ccy: 980,
-        //     merchantPaymInfo: {
-        //       reference: '84d0070ee4e44667b31371d8f8813947',
-        //       destination: 'Your order in the WoodShop',
-        //       comment: 'Your order',
-        //       basketOrder: [
-        //         {
-        //           name: 'Табуретка',
-        //           qty: 2,
-        //           sum: 2100,
-        //           total: 4200,
-        //           icon: null,
-        //           unit: 'шт.',
-        //           code: 'd21da1c47f3c45fca10a10c32518bdeb',
-        //         },
-        //       ],
-        //     },
-        //     redirectUrl: 'http://localhost:4200/home',
-        //     validity: 3600,
-        //     paymentType: null,
-        //   };
-            const headers = new HttpHeaders({
-                'Content-Type': 'application/json',
-                'X-Token': 'uHuevGSB4NpYxstom5D6gvwwzdNLG_PCJFQzwttCiXR8',
-              });
-          
-              const backendUrl = 'http://localhost:8081/api/monobank/create-invoice'; // Бэкенд эндпоинт
-
-              this.http.post<InvoiceResponse>(backendUrl, body, { headers }).subscribe(
-                (response) => {
-                  console.log('Invoice created successfully:', response);
-                  window.location.href = response.pageUrl;
-                },
-                (error) => {
-                  console.error('Error creating invoice:', error);
-                }
-              );
-              
+          })
+        },
+        redirectUrl: 'http://localhost:4200/home',
+        validity: 3600,
+        paymentType: null
+      };
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'X-Token': 'uHuevGSB4NpYxstom5D6gvwwzdNLG_PCJFQzwttCiXR8'
       });
-
-    
-
-    
-
-   
+      const backendUrl = 'http://localhost:8081/api/monobank/create-invoice';
+      this.http.post<InvoiceResponse>(backendUrl, body, { headers }).subscribe(
+        response => {
+          console.log('Invoice created successfully:', response);
+          window.location.href = response.pageUrl;
+        },
+        error => {
+          console.error('Error creating invoice:', error);
+        }
+      );
+    });
   }
 
   placeOrder(byCreditCard: boolean): void {

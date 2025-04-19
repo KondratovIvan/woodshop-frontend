@@ -10,6 +10,15 @@ import { AddProductComponent } from './components/add-product/add-product.compon
 import { EditProductComponent } from './components/edit-product/edit-product.component';
 import { AuthGuard } from './security/guards/sec.guard';
 import { CheckoutComponent } from './components/checkout/checkout.component';
+import { DeliveryComponent } from './components/footer/delivery/delivery.component';
+import { PaymentsComponent } from './components/footer/payments/payments.component';
+import { RecommendationsComponent } from './components/footer/recommendations/recommendations.component';
+import { LegalNoticeComponent } from './components/footer/legal-notice/legal-notice.component';
+import { TermsComponent } from './components/footer/terms/terms.component';
+import { FaqComponent } from './components/footer/faq/faq.component';
+import { RefundComponent } from './components/footer/refund/refund.component';
+import { SupportComponent } from './components/footer/support/support.component';
+import { PartnerComponent } from './components/footer/partner/partner.component';
 
 const routes: Routes = [
   {
@@ -31,6 +40,15 @@ const routes: Routes = [
   {path : "edit-product" , component:EditProductComponent , canActivate:[AuthGuard]  , data : {roles : ['ADMIN']}},
   { path: 'home', component: HomeComponent },
   { path: '', component: HomeComponent },
+  { path: 'delivery',          component: DeliveryComponent },
+  { path: 'payments',          component: PaymentsComponent },
+  { path: 'recommendations',   component: RecommendationsComponent },
+  { path: 'legal-notice',      component: LegalNoticeComponent },
+  { path: 'terms',             component: TermsComponent },
+  { path: 'faq',               component: FaqComponent },
+  { path: 'refund',            component: RefundComponent },
+  { path: 'support',           component: SupportComponent },
+  { path: 'partner',           component: PartnerComponent },
 ];
 
 @NgModule({
