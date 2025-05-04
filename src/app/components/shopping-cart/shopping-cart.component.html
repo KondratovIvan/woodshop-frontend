@@ -9,24 +9,18 @@
           <li class="active">Shoping Cart</li>
         </ul>
 
-        <ng-container
-          *ngIf="shoppingCart$ | async as state"
-          [ngSwitch]="state.dataState"
-        >
+        <ng-container *ngIf="shoppingCart$ | async as state" [ngSwitch]="state.dataState">
           <ng-container *ngSwitchCase="cartDataState.LOADING">
-            <h1>data is LOADING .....................................</h1>
+            <h1>data is LOADING…</h1>
           </ng-container>
-
           <ng-container *ngSwitchCase="cartDataState.LOADED">
-            <app-shopping-cart-items
-              [shoppingCart]="state.shoppingCart"
-            ></app-shopping-cart-items>
+            <app-shopping-cart-items [shoppingCart]="state.shoppingCart"></app-shopping-cart-items>
           </ng-container>
-
           <ng-container *ngSwitchCase="cartDataState.ERROR">
-            <h1>data is loaded with error : / {{ state.errorMessage }} /</h1>
+            <h1>Error: {{ state.errorMessage }}</h1>
           </ng-container>
         </ng-container>
+        
 
         <a href="/cart-checkout" class="btn btn-continue checkout-btn">
           <span>Go to Checkout</span>

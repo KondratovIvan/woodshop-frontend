@@ -1,18 +1,22 @@
-import { Component, Input } from '@angular/core';
-import { Product } from '../../../models/product.model';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-gallery',
   templateUrl: './gallery.component.html',
   styleUrls: ['./gallery.component.css'],
 })
-export class GalleryComponent {
-  @Input() product: Product|null =null;
-  selectedImage: string | undefined = this?.product?.productImagesBas64[1];
+export class GalleryComponent implements OnInit {
+  @Input() product!: { productImagesBas64: string[] };
 
-  // selectedImage: string = '/assets/img/product_sample.png';
+  selectedImage: string | null = null;
 
-  changeImage(image: string) {
-    this.selectedImage = image;
+  ngOnInit(): void {
+    if (this.product.productImagesBas64?.length) {
+      this.selectedImage = this.product.productImagesBas64[0];
+    }
+  }
+
+  changeImage(img: string): void {
+    this.selectedImage = img;
   }
 }

@@ -1,87 +1,7 @@
-<div style style="margin-bottom: 20px">
-  <div class="navbar">
-      <div class="navbar-inner">
-        <div (click)="onHome()" class="logo">
-          <img
-            src="assets/img/logo.png"
-            alt=""
-            style="width: 50px; height: 50px"
-          />
-          <a><span>WoodShop</span></a>
-        </div>
-        <form
-          *ngIf="searchFormGroup"
-          [formGroup]="searchFormGroup"
-          class="navbar-form"
-        >
-          <div style="position: relative">
-            <img
-              src="assets/img/search-normal.svg"
-              alt=""
-              style="position: absolute; left: 8px; top: 7px"
-            />
-            <input
-              class="search search-input"
-              type="text"
-              placeholder="Search products"
-              formControlName="keyword"
-            />
-          </div>
-          <select class="search" formControlName="category">
-            <option>ALL</option>
-            <option *ngFor="let cat of categories">{{ cat }}</option>
-          </select>
-          <button
-            (click)="onSearchProduct()"
-            type="submit"
-            id="submitButton"
-            class="btn btn-wood"
-          >
-            Find
-          </button>
-        </form>
-        <ul id="topMenu" class="navbar-ul">
-          <li class="navbar-li">
-            <a (click)="onHome()">Home</a>
-          </li>
-          <li class="navbar-li">
-            <a  (click)="onContact()">Contact</a>
-          </li>
-          <li class="navbar-li">
-            <ng-container *ngIf="securityService.hasRoleIn(['ADMIN'])">
-              <a
-                (click)="onAdmin()"
-                role="button"
-                data-toggle="modal"
-                style="padding-right: 0; cursor: pointer"
-                ><span class="btn btn-wood">ADMIN</span></a
-              >
-            </ng-container>
-          </li>
-          <li class="navbar-li">
-            <a role="button" data-toggle="modal" style="padding-right: 0">
-              <span
-                (click)="securityService.login()"
-                *ngIf="!securityService.profile"
-                class="btn btn-primary"
-                >Login</span
-              >
-              <span
-                (click)="securityService.logout()"
-                *ngIf="securityService.profile"
-                class="btn btn-large btn-primary"
-                >Logout</span
-              >
-            </a>
-          </li>
-        </ul>
-      </div>
-</div>
-
-<!-- <div style="margin-bottom: 20px">
+<div style="margin-bottom: 20px">
   <div class="navbar">
     <div class="navbar-inner">
-      <div class="logo">
+      <div (click)="onHome()" class="logo">
         <img
           src="assets/img/logo.png"
           alt=""
@@ -89,7 +9,12 @@
         />
         <a><span>WoodShop</span></a>
       </div>
-      <form class="navbar-form">
+
+      <form
+        *ngIf="searchFormGroup"
+        [formGroup]="searchFormGroup"
+        class="navbar-form"
+      >
         <div style="position: relative">
           <img
             src="assets/img/search-normal.svg"
@@ -100,29 +25,48 @@
             class="search search-input"
             type="text"
             placeholder="Search products"
+            formControlName="keyword"
           />
         </div>
-        <select class="search">
-          <option>Spoons</option>
-          <option>Plates</option>
-          <option>Tree things 3</option>
-          <option>Tree things 4</option>
-        </select>
-        <button type="submit" class="btn btn-wood">Find</button>
+        <button
+          (click)="onSearchProduct()"
+          type="submit"
+          id="submitButton"
+          class="btn btn-wood"
+        >
+          Find
+        </button>
       </form>
-      <ul class="navbar-ul">
-        <li class="navbar-li"><a>Home</a></li>
-        <li class="navbar-li"><a>Contact</a></li>
+
+      <ul id="topMenu" class="navbar-ul">
+        <li class="navbar-li"><a (click)="onHome()">Home</a></li>
+        <li class="navbar-li"><a (click)="onContact()">Contact</a></li>
         <li class="navbar-li">
-          <a> <span class="btn btn-primary">Login</span> </a>
+          <ng-container *ngIf="securityService.hasRoleIn(['ADMIN'])">
+            <a
+              (click)="onAdmin()"
+              role="button"
+              style="padding-right: 0; cursor: pointer"
+            >
+              <span class="btn btn-wood">ADMIN</span>
+            </a>
+          </ng-container>
         </li>
         <li class="navbar-li">
-          <span class="btn btn-primary">Logout</span>
-        </li>
-        <li class="navbar-li">
-          <a><span class="btn btn-wood">ADMIN</span></a>
+          <span
+            *ngIf="!securityService.profile"
+            (click)="securityService.login()"
+            class="btn btn-primary"
+            >Login</span
+          >
+          <span
+            *ngIf="securityService.profile"
+            (click)="securityService.logout()"
+            class="btn btn-primary"
+            >Logout</span
+          >
         </li>
       </ul>
     </div>
   </div>
-</div> -->
+</div>

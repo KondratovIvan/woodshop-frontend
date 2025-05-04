@@ -3,25 +3,31 @@
     <h3 class="product-name">{{ product.name }}</h3>
     <hr class="custom-hr product-hr" />
 
-    <form [formGroup]="addProductFrom" class="product-form">
+    <form
+      [formGroup]="addProductForm"
+      class="product-form"
+      (ngSubmit)="onAddProductToCart()"
+    >
       <div class="product-group">
-        <label class="product-price"
-          ><span
-            >{{ product.productPrice.price }} {{ product.productPrice.symbol
-            }}</span
-          ></label
-        >
+        <label class="product-price">
+          <span
+            >{{ product.productPrice.price }}
+            {{ product.productPrice.symbol }}</span
+          >
+        </label>
+
         <div class="product-controls">
           <input
-            formControlName="quantity"
             type="number"
-          class="product-qty"
-            placeholder="Qty."
+            formControlName="quantity"
+            class="product-qty"
+            min="1"
           />
+
           <button
-            (click)="onAddProductToCart()"
             type="submit"
             class="btn btn-add-to-cart"
+            [disabled]="addProductForm.invalid"
           >
             Add to cart <i class="icon-shopping-cart"></i>
           </button>
@@ -31,71 +37,31 @@
       <hr class="custom-hr product-hr" />
 
       <div class="product-group">
-        <label class="product-label"
-          >Color</label
-        >
+        <label class="product-label">Color</label>
         <div class="product-controls">
           <select formControlName="color" class="product-select">
-            <option *ngFor="let color of product.colors">{{ color }}</option>
+            <option
+              *ngFor="let c of product.colors"
+              [value]="c"
+            >
+              {{ c }}
+            </option>
           </select>
         </div>
       </div>
     </form>
+
     <hr class="custom-hr product-hr" />
-    <p>
-      {{ product.description }}
-    </p>
+    <p>{{ product.description }}</p>
+
     <ng-container *ngIf="secService.hasRoleIn(['ADMIN'])">
       <button
         (click)="onEditProduct()"
-        class="btn btn-wood" style="margin-top: 20px"
+        class="btn btn-wood"
+        style="margin-top: 20px"
       >
         Edit product <i class="icon-edit"></i>
       </button>
     </ng-container>
   </div>
 </ng-container>
-
-<!-- <div>
-  <div class="product-container">
-    <h3 class="product-name">Wooden piece of work</h3>
-    <hr class="custom-hr product-hr" />
-
-    <form class="product-form">
-      <div class="product-group">
-        <label class="product-price"><span>$99.99</span></label>
-        <div class="product-controls">
-          <input type="number" class="product-qty" placeholder="Qty." />
-          <button type="submit" class="btn btn-add-to-cart">
-            <span>Add to cart</span>
-          </button>
-        </div>
-      </div>
-
-      <hr class="custom-hr product-hr" />
-
-      <div class="product-group">
-        <label class="product-label">Color</label>
-        <div class="product-controls">
-          <select class="product-select">
-            <option>Red</option>
-            <option>Blue</option>
-            <option>Green</option>
-          </select>
-        </div>
-      </div>
-    </form>
-    <hr class="custom-hr product-hr" />
-    <p>
-      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Totam vero non
-      numquam velit quasi veniam ducimus minus dolorum quis corporis. Dolore
-      temporibus omnis commodi rerum asperiores dicta unde hic quaerat. Eum rem
-      at enim, odit sunt modi asperiores nostrum itaque deleniti distinctio! Non
-      asperiores distinctio voluptate quidem blanditiis. Ea corporis asperiores
-      amet quaerat dignissimos dolore, deserunt pariatur nihil voluptates eius.
-    </p>
-    <button class="btn btn-wood" style="margin-top: 20px">
-      Edit product <i class="icon-edit"></i>
-    </button>
-  </div>
-</div> -->

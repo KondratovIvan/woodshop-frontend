@@ -38,8 +38,8 @@ export class ProductService implements OnInit{
   // }
 
 
-  public getSelectedProducts(pageSize : PageSize): Observable<Product[]> {
-    return this.http.get<Product[]>(this.productService + "/products/search/findBySelected?selected=true&page=" + pageSize.page +"&size="+pageSize.size)
+  public getSelectedProducts(): Observable<Product[]> {
+    return this.http.get<Product[]>(this.productService + "/products/search/findBySelected?selected=true")
   }
   public getProductsPageByKeyword(payload : ActionPayload<String>): Observable<Product[]> {
     return this.http.get<Product[]>(this.productService + "/products/search/findByNameContainsIgnoreCase?keyword=" + payload.data +"&page=" + payload.pageSize.page +"&size="+payload.pageSize.size)

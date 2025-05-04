@@ -32,7 +32,7 @@ const routes: Routes = [
   //   component: ShoppingCartComponent,
   // },
   {path: 'cart-checkout', component: CheckoutComponent, canActivate: [AuthGuard], data: { roles: ['USER', 'ADMIN'] }},
-  { path: 'product-details', component: ProductDetailsComponent,  canActivate: [AuthGuard],data: { roles: ['USER', 'ADMIN'] }},
+  { path: 'product-details', component: ProductDetailsComponent},
   { path: 'searched-products', component: SearchedProductsListComponent },
   { path: 'contact', component: ContactComponent },
   {path : "admin" , component:AdminDashboardComponent , canActivate:[AuthGuard]  , data : {roles : ['ADMIN']}},

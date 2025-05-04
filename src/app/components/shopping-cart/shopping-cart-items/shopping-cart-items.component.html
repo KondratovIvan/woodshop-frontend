@@ -12,6 +12,7 @@
     </a>
   </div>
   <hr class="custom-hr" />
+
   <table class="cart-table">
     <thead>
       <tr>
@@ -19,8 +20,6 @@
         <th>Description</th>
         <th>Quantity/Update</th>
         <th>Price</th>
-        <!-- <th>Discount</th>
-        <th>Tax</th> -->
         <th>Total</th>
       </tr>
     </thead>
@@ -29,137 +28,58 @@
         <td (click)="goToProduct(item.product)">
           <img
             width="60"
-            src="{{ item.product.productImagesBas64[0] }}"
+            [src]="item.product.productImagesBas64[0]"
             alt="Product img"
           />
         </td>
         <td>
-          {{ item.product.name }}<br />Color: {{ item.product.pickedColor }}
+          {{ item.product.name }}<br />
+          Color: {{ item.product.pickedColor }}
         </td>
         <td>
           <div class="cart-quantity">
             <input
               class="cart-input"
-              placeholder="{{ item.quantity }}"
-              value="{{ item.quantity }}"
-              id="appendedInputButtons"
+              [value]="item.quantity"
               type="text"
+              readonly
             />
-            <button class="cart-btn">-</button>
-            <button class="cart-btn">+</button>
+            <!-- Передаём сразу item.product.productId -->
             <button
-              (click)="onDeleteItem(item.product)"
-              class="btn btn-danger"
-              type="button"
+              class="cart-btn"
+              (click)="onDecrease(item.product.productId)"
             >
-            &#x2715;
+              −
+            </button>
+            <button
+              class="cart-btn"
+              (click)="onIncrease(item.product.productId)"
+            >
+              +
+            </button>
+            <button
+              type="button"
+              class="cart-btn cart-btn-remove"
+              (click)="onDeleteItem(item.product.productId)"
+            >
+              ✕
             </button>
           </div>
         </td>
         <td>
-          {{ item.product.productPrice.price }} {{ item.product.productPrice.symbol}} 
+          {{ item.product.productPrice.price }}
+          {{ item.product.productPrice.symbol }}
         </td>
-        <!-- <td>{{ item.product.productPrice.symbol }}0</td>
-        <td>{{ item.product.productPrice.symbol }}0</td> -->
-        <td>{{ item.quantity * item.product.productPrice.price }}</td>
+        <td>
+          {{ item.quantity * item.product.productPrice.price }}
+        </td>
       </tr>
-
       <tr>
         <td colspan="4" class="cart-summary">Total Price:</td>
-        <td>{{ shoppingCartService.calcTotalPrice(shoppingCart) }}</td>
-      </tr>
-      <!-- <tr>
-        <td colspan="6" class="cart-summary">Total Discount:</td>
-        <td>0</td>
-      </tr>
-      <tr>
-        <td colspan="6" class="cart-summary">Total Tax:</td>
-        <td>0</td>
-      </tr>
-      <tr>
-        <td colspan="6" class="cart-summary">
-          <strong
-            >TOTAL ({{ shoppingCartService.calcTotalPrice(shoppingCart) }} - 0 -
-            0) =</strong
-          >
+        <td>
+          {{ shoppingCartService.calcTotalPrice(shoppingCart) }}
         </td>
-        <td class="cart-total">
-          <strong>
-            {{ shoppingCartService.calcTotalPrice(shoppingCart) }}
-          </strong>
-        </td>
-      </tr> -->
+      </tr>
     </tbody>
   </table>
 </ng-container>
-
-<!-- <div>
-  <div class="cart-title-container">
-    <div style="display: flex; align-items: center; gap: 20px">
-      <h3 class="cart-title">Shopping Cart</h3>
-      <small>25 Item(s)</small>
-    </div>
-    <a href="products.html" class="btn btn-continue">
-      <img
-        src="assets/img/left-arrow-svgrepo-com.svg"
-        alt="Left Arrow icon"
-        style="width: 20px; height: 20px"
-      />
-      <span>Continue Shopping</span>
-    </a>
-  </div>
-  <hr class="custom-hr" />
-
-  <table class="cart-table">
-    <thead>
-      <tr>
-        <th>Product</th>
-        <th>Description</th>
-        <th>Quantity/Update</th>
-        <th>Price</th>
-        <th>Discount</th>
-        <th>Tax</th>
-        <th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of testShoppingCart">
-        <td>
-          <img class="cart-img" width="60" [src]="item.image" alt="Product" />
-        </td>
-        <td>{{ item.name }}<br />Color: {{ item.color }}</td>
-        <td>
-          <div class="cart-quantity">
-            <input class="cart-input" type="text" [value]="item.quantity" />
-            <button class="cart-btn">-</button>
-            <button class="cart-btn">+</button>
-            <button class="cart-btn cart-btn-remove">&#x2715;</button>
-          </div>
-        </td>
-        <td>{{ item.priceSymbol }}{{ item.price }}</td>
-        <td>{{ item.priceSymbol }}0</td>
-        <td>{{ item.priceSymbol }}0</td>
-        <td>{{ item.quantity * item.price }}</td>
-      </tr>
-
-      <tr>
-        <td colspan="6" class="cart-summary">Total Price:</td>
-        <td>650</td>
-      </tr>
-      <tr>
-        <td colspan="6" class="cart-summary">Total Discount:</td>
-        <td>0</td>
-      </tr>
-      <tr>
-        <td colspan="6" class="cart-summary">Total Tax:</td>
-        <td>0</td>
-      </tr>
-      <tr>
-        <td colspan="6" class="cart-summary">
-          <strong>TOTAL (650 - 0 - 0) =</strong>
-        </td>
-        <td class="cart-total"><strong>650</strong></td>
-      </tr>
-    </tbody>
-  </table>
-</div> -->

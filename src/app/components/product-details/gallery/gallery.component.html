@@ -1,54 +1,33 @@
 <ng-container *ngIf="product">
   <div id="gallery" class="product-gallery">
-    <a>
+    <a *ngIf="selectedImage; else noImage">
       <img
         [src]="selectedImage"
         class="main-image"
         alt="main image"
       />
     </a>
-    <div id="differentview"class="more-options">
+    <ng-template #noImage></ng-template>
+
+    <div
+      id="differentview"
+      class="more-options"
+      *ngIf="product.productImagesBas64?.length"
+    >
       <div class="thumbnails">
-        <div class="item active">
-          <a (click)="changeImage(product.productImagesBas64[0])">
+        <div
+          class="item"
+          *ngFor="let img of product.productImagesBas64; let i = index"
+          [class.active]="img === selectedImage"
+        >
+          <a (click)="changeImage(img)">
             <img
-              src="{{ product.productImagesBas64[0] }}"
-              alt="thumbnail 1"
-          /></a>
-          <a (click)="changeImage(product.productImagesBas64[1])">
-            <img
-              src="{{ product.productImagesBas64[1] }}"
-              alt="thumbnail 2"
-          /></a>
-          <a (click)="changeImage(product.productImagesBas64[2])">
-            <img
-              src="{{ product.productImagesBas64[2] }}"
-              alt="thumbnail 3"
-          /></a>
+              [src]="img"
+              alt="thumbnail {{ i + 1 }}"
+            />
+          </a>
         </div>
       </div>
     </div>
-
   </div>
 </ng-container>
-
-<!-- <div>
-  <div id="gallery" class="product-gallery">
-    <a title="Wood plate">
-      <img [src]="selectedImage" class="main-image" alt="main image" />
-    </a>
-    <div id="differentview" class="more-options">
-      <div class="thumbnails">
-        <a (click)="changeImage('/assets/img/product_sample.png')"
-          ><img src="/assets/img/product_sample.png" alt="thumbnail 1" />
-        </a>
-        <a (click)="changeImage('/assets/img/product_sample.png')"
-          ><img src="/assets/img/product_sample.png" alt="thumbnail 2" />
-        </a>
-        <a (click)="changeImage('/assets/img/logo.png')"
-          ><img src="/assets/img/logo.png" alt="thumbnail 3" />
-        </a>
-      </div>
-    </div>
-  </div>
-</div> -->

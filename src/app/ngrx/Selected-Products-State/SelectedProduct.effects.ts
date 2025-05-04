@@ -18,8 +18,8 @@ export class SelectedProductEffects {
   getSelectedProductEffect: Observable<Action> = createEffect(
     () => this.effectAction.pipe(
       ofType(NewProductActionType.GET_SELECTED_PRODUCTS),
-      mergeMap((action:SelectedProductAction) => {
-        return this.productService.getSelectedProducts(action.payload).pipe(
+      mergeMap(() => {
+        return this.productService.getSelectedProducts().pipe(
           map(data => {
             return new GetSelectedProductsActionSuccess(data)
           }),

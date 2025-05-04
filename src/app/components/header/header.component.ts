@@ -36,8 +36,7 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.searchFormGroup = this.fb.group({
-      keyword: [''],
-      category: [''],
+      keyword: ['']
     });
     this.shoppingCart$ = this.store.pipe(
       map((state) => state.shoppingCartState)
@@ -61,30 +60,18 @@ export class HeaderComponent implements OnInit {
   }
 
   onSearchProduct() {
-    let keyword = this.searchFormGroup?.value.keyword;
-    let category = this.searchFormGroup?.value.category;
-    if (keyword !== '') {
+    const keyword = this.searchFormGroup?.value.keyword?.trim();
+    if (keyword) {
       this.store.dispatch(
         new GetProductsPageByKeyWordAction({
           pageSize: { page: 0, size: 6 },
-          data: keyword,
+          data: keyword
         })
       );
-      this.router.navigateByUrl('/searched-products');
     } else {
-      if (category !== 'ALL') {
-        this.store.dispatch(
-          new GetProductsPageByCategoryAction({
-            pageSize: { page: 0, size: 6 },
-            data: category,
-          })
-        );
-        this.router.navigateByUrl('/searched-products');
-      } else {
-        this.store.dispatch(new GetProductsPageAction({ page: 0, size: 6 }));
-        this.router.navigateByUrl('/searched-products');
-      }
+      this.store.dispatch(new GetProductsPageAction({ page: 0, size: 6 }));
     }
+    this.router.navigateByUrl('/searched-products');
   }
 
   onShCart() {
