@@ -48,7 +48,7 @@
               role="button"
               style="padding-right: 0; cursor: pointer"
             >
-              <span class="btn btn-wood">ADMIN</span>
+              <span class="btn btn-wood">Add product</span>
             </a>
           </ng-container>
         </li>
@@ -65,6 +65,14 @@
             class="btn btn-primary"
             >Logout</span
           >
+        </li>
+        <li class="navbar-li" *ngIf="securityService.profile">
+          <a href="/profile"
+            ><img
+              src="assets/img/account.png"
+              alt="user icon"
+              class="user-icon"
+          /></a>
         </li>
       </ul>
     </div>

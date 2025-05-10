@@ -56,6 +56,7 @@ import { RecommendationsComponent } from './components/footer/recommendations/re
 import { RefundComponent } from './components/footer/refund/refund.component';
 import { SupportComponent } from './components/footer/support/support.component';
 import { TermsComponent } from './components/footer/terms/terms.component';
+import { ProfileComponent } from './components/profile/profile.component';
 export function initKeyClock(kcSecurity : KeycloakService) {
   return () =>
     kcSecurity.init({
@@ -116,7 +117,8 @@ export function initKeyClock(kcSecurity : KeycloakService) {
     RecommendationsComponent,
     RefundComponent,
     SupportComponent,
-    TermsComponent
+    TermsComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,

@@ -22,7 +22,9 @@ export class PagginationComponent {
   constructor(private router: Router, private store: Store) {}
   // check the fetch methode to continue the pagination in the same context
   onPageHandle(index: number) {
+    console.log(this.payload);
     switch (this.fetchMethode) {
+    
       case FetchMethode.SEARCH_BY_KEYWORD:
         this.store.dispatch(
           new GetProductsPageByKeyWordAction({

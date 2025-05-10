@@ -1,14 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  ActivatedRoute,
+  Router
+} from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { SecurityService } from '../../security/security.service';
 import { Store } from '@ngrx/store';
-import { map, Observable } from 'rxjs';
-import { ShoppingCartState } from '../../ngrx/ShoppingCartState/cart.reducer';
+import { map, take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+
+import { SecurityService } from '../../security/security.service';
 import { ShoppingCartService } from 'src/app/services/shoppingCartService/shopping-cart.service';
-// import { state } from '@angular/animations';
-import { DataStateEnum } from '../../ngrx/productsState/products.reducer';
 import { GetShoppingCartAction } from '../../ngrx/ShoppingCartState/cart.actions';
+import { ShoppingCartState } from '../../ngrx/ShoppingCartState/cart.reducer';
+import { DataStateEnum } from '../../ngrx/productsState/products.reducer';
 
 interface InvoiceResponse {
   pageUrl: string;
@@ -20,19 +25,18 @@ interface InvoiceResponse {
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.css'],
 })
-export class CheckoutComponent {
+export class CheckoutComponent implements OnInit {
   checkoutForm: FormGroup;
-
   public readonly cartDataState = DataStateEnum;
   shoppingCart$?: Observable<ShoppingCartState>;
 
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
-    private secService: SecurityService, 
+    private secService: SecurityService,
     private store: Store<{ shoppingCartState: ShoppingCartState }>,
     private shoppingCartService: ShoppingCartService,
-
+    private router: Router
   ) {
     this.checkoutForm = this.fb.group({
       name: [
@@ -58,126 +62,151 @@ export class CheckoutComponent {
     });
   }
 
-
   ngOnInit(): void {
     setTimeout(() => {
-      if (this.secService.profile && this.secService.profile.id) {
-        this.store.dispatch(new GetShoppingCartAction(this.secService.profile.id));
+      const customerId = this.secService.profile?.id;
+      if (customerId) {
+        this.store.dispatch(new GetShoppingCartAction(customerId));
         this.shoppingCart$ = this.store.pipe(
           map((state) => state.shoppingCartState)
         );
       } else {
-        console.warn('Профиль пользователя еще не загружен');
+        console.warn('User profile not loaded yet');
       }
-    }, 500); // Даем 0.5 секунды Keycloak на загрузку данных
+    }, 500);
   }
-  
 
-  payOnline() {
-    if (this.checkoutForm.valid) {
-      console.log('Delivery Data:', this.checkoutForm.value);
-      this.createMonopayInvoice();
-      this.checkoutForm.reset();
+  payOnline(): void {
+    if (this.checkoutForm.invalid) {
+      return;
     }
+    this.createMonopayInvoice();
   }
 
-  payByCash() {
-    if (this.checkoutForm.valid) {
-      console.log('Delivery Data:', this.checkoutForm.value);
-      alert('Order placed successfully! Please pay by cash on delivery.');
-      this.placeOrder(false);
-      this.checkoutForm.reset();
+  payByCash(): void {
+    if (this.checkoutForm.invalid) {
+      return;
     }
+    alert('Order placed successfully! Please pay by cash on delivery.');
+    this.placeOrder(false);
+    this.clearCartAndReload();
+    this.checkoutForm.reset();
   }
 
-  createMonopayInvoice() {
-    this.shoppingCart$?.subscribe(state => {
-      const totalPriceUAH = this.shoppingCartService.calcTotalPrice(state.shoppingCart ?? { items: [], customerId: '0', id: '0' });
-      const totalPricePennies = Math.round(totalPriceUAH * 100);
-      const body = {
-        amount: totalPricePennies,
-        ccy: 980,
-        merchantPaymInfo: {
-          reference: Date.now(),
-          destination: 'Your order in the WoodShop',
-          comment: 'Your order',
-          basketOrder: state.shoppingCart?.items.map(item => {
-            const pricePennies = Math.round(item.product.productPrice.price * 100);
-            return {
-              name: item.product.name,
-              qty: item.quantity,
-              sum: pricePennies,
-              total: pricePennies * item.quantity,
-              icon: item.product.productImagesBas64[0],
-              unit: 'шт.',
-              code: item.product.name
-            };
-          })
-        },
-        redirectUrl: 'http://localhost:4200/home',
-        validity: 3600,
-        paymentType: null
-      };
-      const headers = new HttpHeaders({
-        'Content-Type': 'application/json',
-        'X-Token': 'uHuevGSB4NpYxstom5D6gvwwzdNLG_PCJFQzwttCiXR8'
-      });
-      const backendUrl = 'http://localhost:8081/api/monobank/create-invoice';
-      this.http.post<InvoiceResponse>(backendUrl, body, { headers }).subscribe(
-        response => {
-          console.log('Invoice created successfully:', response);
-          window.location.href = response.pageUrl;
-        },
-        error => {
-          console.error('Error creating invoice:', error);
-        }
-      );
-    });
-  }
-
-  placeOrder(byCreditCard: boolean): void {
-    this.shoppingCart$?.subscribe((cart) => {
-        console.log('cart:', cart.shoppingCart);  // 🔍 Посмотрите, что хранится в cart
-      const orderData = {
-        customerId: this.secService.profile.id,
-        items: cart.shoppingCart?.items,
-        totalAmount: this.shoppingCartService.calcTotalPrice(cart.shoppingCart?? { items: [], customerId:"0", id:"0" }),
-        deliveryData: this.checkoutForm.value,
-        payment: {
-          amount: this.shoppingCartService.calcTotalPrice(cart.shoppingCart?? { items: [], customerId:"0", id:"0" }),
-          currency: 'UAH',
-          byCreditCard: byCreditCard,
-        },
-      };
-      console.log('Order data:', orderData);
-      this.http
-        .post('http://localhost:8081/api/orders', orderData, {
-          headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-        })
-        .subscribe(
-          (response) => console.log('Order placed:', response),
-          (error) => console.error('Order failed:', error)
+  private createMonopayInvoice(): void {
+    this.shoppingCart$!
+      .pipe(take(1))
+      .subscribe((state) => {
+        const customerId = this.secService.profile!.id;
+        const totalUAH = this.shoppingCartService.calcTotalPrice(
+          state.shoppingCart ?? { items: [], customerId: '0', id: '0' }
         );
-    });
+        const totalPennies = Math.round(totalUAH * 100);
+        const body = {
+          amount: totalPennies,
+          ccy: 980,
+          merchantPaymInfo: {
+            reference: Date.now(),
+            destination: 'Your order in the WoodShop',
+            comment: 'Your order',
+            basketOrder: state.shoppingCart?.items.map((item) => {
+              const pricePennies = Math.round(
+                item.product.productPrice.price * 100
+              );
+              return {
+                name: item.product.name,
+                qty: item.quantity,
+                sum: pricePennies,
+                total: pricePennies * item.quantity,
+                icon: item.product.productImagesBas64[0],
+                unit: 'шт.',
+                code: item.product.name,
+              };
+            }),
+          },
+          redirectUrl: 'http://localhost:4200/home',
+          validity: 3600,
+          paymentType: null,
+        };
+
+        const headers = new HttpHeaders({
+          'Content-Type': 'application/json',
+          'X-Token': 'uHuevGSB4NpYxstom5D6gvwwzdNLG_PCJFQzwttCiXR8',
+        });
+
+        this.http
+          .post<InvoiceResponse>(
+            'http://localhost:8081/api/monobank/create-invoice',
+            body,
+            { headers }
+          )
+          .subscribe(
+            (resp) => {
+              this.placeOrder(true);
+              this.clearCartAndReload();
+              setTimeout(() => {
+                window.location.href = resp.pageUrl;
+              }, 500);
+            },
+            (err) => console.error('Error creating invoice:', err)
+          );
+      });
+  }
+
+  private placeOrder(byCreditCard: boolean): void {
+    this.shoppingCart$!
+      .pipe(take(1))
+      .subscribe((state) => {
+        const customerId = this.secService.profile!.id;
+        const cart = state.shoppingCart!;
+        const orderData = {
+          customerId,
+          items: cart.items,
+          totalAmount: this.shoppingCartService.calcTotalPrice(cart),
+          deliveryData: this.checkoutForm.value,
+          payment: {
+            amount: this.shoppingCartService.calcTotalPrice(cart),
+            currency: 'UAH',
+            byCreditCard,
+          },
+        };
+        this.http
+          .post('http://localhost:8081/api/orders', orderData, {
+            headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+          })
+          .subscribe(
+            () => console.log('Order placed'),
+            (err) => console.error('Order failed:', err)
+          );
+      });
+  }
+
+  private clearCartAndReload(): void {
+    const customerId = this.secService.profile!.id;
+    this.http
+      .delete(`http://localhost:8081/api/customers/${customerId}/shoppingCart`)
+      .subscribe({
+        next: () => {
+          if (customerId) {
+            this.store.dispatch(new GetShoppingCartAction(customerId));
+          } else {
+            console.error('Customer ID is undefined');
+          }
+        },
+        error: (err) =>
+          console.error('Failed to clear shopping cart:', err),
+      });
   }
 
   getControlError(controlName: string): string {
     const control = this.checkoutForm.get(controlName);
-
     if (control?.touched || control?.dirty) {
-      const formattedControlName = controlName
+      const label = controlName
         .replace(/([a-z])([A-Z])/g, '$1 $2')
-        .replace(/^([a-z])/, (match) => match.toUpperCase());
-
-      if (control?.hasError('required')) {
-        return `${formattedControlName} is required`;
-      }
-      if (control?.hasError('pattern')) {
-        return `${formattedControlName} has an invalid format`;
-      }
-      if (control?.hasError('min')) {
-        return `${formattedControlName} must be greater than 0`;
-      }
+        .replace(/^./, (m) => m.toUpperCase());
+      if (control.hasError('required')) return `${label} is required`;
+      if (control.hasError('pattern')) return `${label} has invalid format`;
+      if (control.hasError('min')) return `${label} must be greater than 0`;
     }
     return '';
   }

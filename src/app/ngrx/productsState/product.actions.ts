@@ -22,6 +22,10 @@ export enum ProductsActionType  {
   DELETE_PRODUCT = "*PRODUCTS* DELETE_PRODUCT ",
   DELETE_PRODUCT_SUCCESS = "*PRODUCTS* DELETE_PRODUCT [SUCCESS]",
   DELETE_PRODUCT_ERROR = "*PRODUCTS* DELETE_PRODUCT [ERROR]  ",
+
+    SET_SEARCH_CRITERIA = "*PRODUCTS* SET SEARCH CRITERIA",
+
+
 }
 
 /** GetAllProductAction **/
@@ -93,6 +97,10 @@ export class GetProductsPageByCategoryActionError implements Action{
   }
 }
 
+export class SetSearchCriteria implements Action {
+  type: ProductsActionType = ProductsActionType.SET_SEARCH_CRITERIA;
+  constructor(public payload: { keyword: string; category: string }) {}
+}
 
 // /** delete product by id **/
 // export class DeleteProductAction implements Action{
@@ -114,5 +122,6 @@ export type ProductAction = GetAllProductsAction | GetAllProductsActionSuccess |
    GetProductsPageAction | GetProductsPageActionSuccess | GetProductsPageActionError |
    GetProductsPageByKeyWordAction | GetProductsPageByKeyWordActionSuccess | GetProductsPageByKeyWordActionError |
    GetProductsPageByCategoryAction | GetProductsPageByCategoryActionSuccess | GetProductsPageByCategoryActionError
+   | SetSearchCriteria
    // |  DeleteProductAction | DeleteProductActionSuccess | DeleteProductActionError
 ;

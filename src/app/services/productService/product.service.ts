@@ -59,8 +59,14 @@ export class ProductService implements OnInit{
     return this.http.post<Product>(this.productService + "/api/products" , product) ;
   }
 
-  public editProduct(product : CreatedProduct):Observable<Product>{
-    return this.http.put<Product>(this.productService + "/api/products" , product) ;
+  public editProduct(
+    productId: string,
+    changes: Partial<CreatedProduct>
+  ): Observable<Product> {
+    return this.http.put<Product>(
+      this.productService + `/api/products/${productId}`,
+      changes
+    );
   }
 
   public deleteProduct(productId : string):Observable<Product>{
@@ -71,5 +77,10 @@ export class ProductService implements OnInit{
   public getDate(product : Product){
     return product.addingDate.slice(0 ,10);
   }
+
+  public getProductById(id: string): Observable<Product> {
+    return this.http.get<Product>(this.productService + `/api/products/find/${id}`);
+  }
+  
 
 }

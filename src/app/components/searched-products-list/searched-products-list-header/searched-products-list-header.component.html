@@ -3,20 +3,21 @@
     <li><a href="index.html">Home</a> <span class="divider">/</span></li>
     <li class="active">Products</li>
   </ul>
-  
+
   <div class="page-title-container">
     <h3 class="page-title">Searched Products</h3>
-    <small class="product-count"> {{productsNumber}} products are available</small></div>
+    <small class="product-count">{{ productsNumber }} products are available</small>
+  </div>
   <hr class="custom-hr" />
-  
-  <form >
+
+  <form>
     <div class="form-group">
-      <label class="sort-label">Sort By </label>
+      <label class="sort-label">Sort By</label>
       <select class="sort-select" (change)="onSortChange($event)">
-        <option value="price-asc">Price: Low to High</option>
-        <option value="price-desc">Price: High to Low</option>
         <option value="date-newest">Date: Newest First</option>
         <option value="date-oldest">Date: Oldest First</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
         <option value="popular">Popularity (Most Reviews)</option>
       </select>
     </div>
@@ -31,28 +32,5 @@
         (change)="onRangeChange()"
       />
     </div>
-
-<!-- <div>
-  <ul class="custom-breadcrumb">
-    <li><a href="index.html">Home</a> <span class="divider">/</span></li>
-    <li class="active">Products</li>
-  </ul>
-
-  <div class="page-title-container">
-    <h3 class="page-title">Searched Products</h3>
-    <small class="product-count"> 10 products are available </small>
-  </div>
-  <hr class="custom-hr" />
-
-  <form>
-    <div class="form-group">
-      <label class="sort-label">Sort By </label>
-      <select class="sort-select">
-        <option>Product name A - Z</option>
-        <option>Product name Z - A</option>
-        <option>Product Stock</option>
-        <option>Product Lowest price first</option>
-      </select>
-    </div>
   </form>
-</div> -->
+</div>

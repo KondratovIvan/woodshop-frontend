@@ -1,43 +1,41 @@
 <div id="mainBody">
   <div class="container">
     <div class="row">
-      <app-sidecar> </app-sidecar>
+      <app-sidecar></app-sidecar>
       <div class="searched-products-container">
-        <ng-container
-          *ngIf="productState$ | async as state"
-          [ngSwitch]="state.dataState"
-        >
+        <ng-container *ngIf="productState$ | async as state" [ngSwitch]="state.dataState">
           <ng-container *ngSwitchCase="ProductStateEnum.LOADING">
             <h1>data is LOADING .....................................</h1>
           </ng-container>
 
           <ng-container *ngSwitchCase="ProductStateEnum.LOADED">
             <app-searched-products-list-header
-            *ngIf="state.pageInfo"
-            [productsNumber]="state.pageInfo.totalElements"
-            [minAvailablePrice]="minAvailablePrice"
-            [maxAvailablePrice]="maxAvailablePrice"
-            (sortChanged)="onSortChanged($event)"
-            (priceFilterChanged)="onPriceFilterChanged($event)"
-          >          
+              *ngIf="state.pageInfo"
+              [productsNumber]="state.pageInfo.totalElements"
+              [minAvailablePrice]="minAvailablePrice"
+              [maxAvailablePrice]="maxAvailablePrice"
+              (sortChanged)="onSortChanged($event)"
+              (priceFilterChanged)="onPriceFilterChanged($event)"
             ></app-searched-products-list-header>
-            <app-products-list [products]="displayedProducts"></app-products-list>
+
+            <app-products-list [products]="sortedProducts"></app-products-list>
+
             <ng-container [ngSwitch]="state.fetchMethode">
               <ng-container *ngSwitchCase="fetchMethode.SEARCH_BY_KEYWORD">
                 <app-paggination
+                  *ngIf="state.products.length > 0"
                   [pageInfo]="state.pageInfo"
                   [fetchMethode]="state.fetchMethode"
-                  [payload]="state.products[0].name"
-                >
-                </app-paggination>
+                  [payload]="state.searchCriteria?.keyword || ''"
+                ></app-paggination>
               </ng-container>
               <ng-container *ngSwitchCase="fetchMethode.SEARCH_BY_CATEGORY">
                 <app-paggination
+                  *ngIf="state.products.length > 0"
                   [pageInfo]="state.pageInfo"
                   [fetchMethode]="state.fetchMethode"
-                  [payload]="state.products[0].category"
-                >
-                </app-paggination>
+                  [payload]="state.searchCriteria?.category || ''"
+                ></app-paggination>
               </ng-container>
             </ng-container>
           </ng-container>

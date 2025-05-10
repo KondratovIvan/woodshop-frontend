@@ -1,29 +1,38 @@
-<ng-container *ngIf="pageInfo">
-  <div class="custom-pagination">
-    <ul class="pagination-list">
-      <li><a class="pagination-arrow" (click)="previousPage()">&lsaquo;</a></li>
-      <li *ngFor="let page of [].constructor(pageInfo.totalPages); let i  = index">
-        <a *ngIf="i === pageInfo.number" class="pagination-item active">{{i}}</a>
-        <a (click)="onPageHandle(i)" *ngIf="i !== pageInfo.number" class="pagination-item">{{i}}</a>
-      </li>
-      <li><a (click)="nextPage()" class="pagination-arrow">&rsaquo;</a></li>
-    </ul>
-  </div>
-  <br class="clr"/>
-</ng-container>
+<ng-container *ngIf="pageInfo as pi">
+  <ng-container *ngIf="pi.totalPages > 1">
+    <div class="custom-pagination">
+      <ul class="pagination-list">
+        <li>
+          <a 
+            class="pagination-arrow" 
+            (click)="previousPage()" 
+            [class.disabled]="pi.number === 0"
+          >
+            &lsaquo;
+          </a>
+        </li>
 
-<!-- <div class="custom-pagination">
-  <ul class="pagination-list">
-    <li><a class="pagination-arrow">&lsaquo;</a></li>
-    <li><a class="pagination-item active">1</a></li>
-    <li><a class="pagination-item">2</a></li>
-    <li><a class="pagination-item">3</a></li>
-    <li><a class="pagination-item">4</a></li>
-    <li><a class="pagination-item">5</a></li>
-    <li><a class="pagination-item">6</a></li>
-    <li><a class="pagination-item">7</a></li>
-    <li><a class="pagination-item">8</a></li>
-    <li><a class="pagination-item">9</a></li>
-    <li><a class="pagination-arrow">&rsaquo;</a></li>
-  </ul>
-</div> -->
+        <li *ngFor="let page of [].constructor(pi.totalPages); let i = index">
+          <a 
+            (click)="onPageHandle(i)" 
+            class="pagination-item" 
+            [class.active]="pi.number === i"
+          >
+            {{ i + 1 }}
+          </a>
+        </li>
+
+        <li>
+          <a 
+            (click)="nextPage()" 
+            class="pagination-arrow" 
+            [class.disabled]="pi.number === pi.totalPages - 1"
+          >
+            &rsaquo;
+          </a>
+        </li>
+      </ul>
+    </div>
+    <br class="clr" />
+  </ng-container>
+</ng-container>

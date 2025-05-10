@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Product } from '../../../models/product.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AddProductToCartAction } from '../../../ngrx/ShoppingCartState/cart.actions';
 import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
+import { AddProductToCartAction } from '../../../ngrx/ShoppingCartState/cart.actions';
 import { GetProductItemAction } from '../../../ngrx/Product-item-State/productItem.actions';
 import { SecurityService } from '../../../security/security.service';
 
@@ -14,7 +14,6 @@ import { SecurityService } from '../../../security/security.service';
 })
 export class ProductItemDescriptionComponent implements OnInit {
   @Input() product: Product | null = null;
-
   addProductForm: FormGroup;
 
   constructor(
@@ -31,6 +30,7 @@ export class ProductItemDescriptionComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.product?.colors?.length) {
+      // по умолчанию первый цвет
       this.addProductForm.patchValue({ color: this.product.colors[0] });
     }
   }
@@ -40,10 +40,8 @@ export class ProductItemDescriptionComponent implements OnInit {
       return;
     }
 
-    let quantity: number = this.addProductForm.value.quantity;
-    quantity = Math.max(1, quantity);
-
-    const color: string = this.addProductForm.value.color;
+    const quantity = Math.max(1, this.addProductForm.value.quantity);
+    const pickedColor = this.addProductForm.value.color;
 
     if (!this.secService.profile) {
       this.secService.login();
@@ -52,18 +50,18 @@ export class ProductItemDescriptionComponent implements OnInit {
 
     this.store.dispatch(
       new AddProductToCartAction({
-        productId: this.product?.productId,
+        productId: this.product!.productId,
         quantity,
-        customerId: this.secService.profile.id!,
-        pickedColor: color,
+        customerId: this.secService.profile?.id || '',
+        pickedColor,
       })
     );
   }
 
-  onEditProduct() {
-    if (this.product) {
-      this.store.dispatch(new GetProductItemAction(this.product));
-      this.router.navigateByUrl('/edit-product');
-    }
+  onEditProduct(): void {
+    if (!this.product) return;
+    this.store.dispatch(new GetProductItemAction(this.product));
+    // ← именно так:
+    this.router.navigate(['/edit-product', this.product.productId]);
   }
 }

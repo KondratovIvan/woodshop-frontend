@@ -1,51 +1,45 @@
-import {Injectable} from "@angular/core";
-import {catchError, map, mergeMap, Observable, of} from "rxjs";
-import {Action} from "@ngrx/store";
-import {Actions, createEffect, ofType} from "@ngrx/effects";
-import {
-  GetAllProductsActionError,
-  GetAllProductsActionSuccess,
-  ProductsActionType
-} from "../productsState/product.actions";
-import {
-  EditProductAction, EditProductActionError, EditProductActionSuccess,
-  ProductItemAction,
-  ProductItemActionType,
-  SaveProductActionError,
-  SaveProductActionSuccess
-} from "./productItem.actions";
-import {ProductService} from "../../services/productService/product.service";
+// src/app/ngrx/Product-item-State/productItem.effects.ts
 
+import { Injectable } from '@angular/core';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { mergeMap, map, catchError, of, Observable } from 'rxjs';
+import { Action } from '@ngrx/store';
+
+import {
+  EditProductAction,
+  EditProductActionSuccess,
+  EditProductActionError,
+  ProductItemActionType
+} from './productItem.actions';
+
+import { ProductService } from '../../services/productService/product.service';
+import type { CreatedProduct } from '../../models/product.model';
 
 @Injectable()
-export class ProductItemEffect{
+export class ProductItemEffect {
 
-  constructor(private productService : ProductService , private effectAction : Actions) {
-  }
-  saveProductEffect:Observable<Action>=createEffect(
-    () => this.effectAction.pipe(
-      ofType(ProductItemActionType.SAVE_PRODUCT) ,
-      mergeMap((action: ProductItemAction) => {
-        return this.productService.saveProduct(action.payload).pipe(
-          map(data => {
-            return new SaveProductActionSuccess(data)
-          }) ,
-          catchError(err => of(new SaveProductActionError(err.message)))
-        ) ;
-      })
-    )
-  );
+  constructor(
+    private actions$: Actions,
+    private productService: ProductService
+  ) {}
 
-  editProductEffect:Observable<Action>=createEffect(
-    () => this.effectAction.pipe(
-      ofType(ProductItemActionType.EDIT_PRODUCT) ,
-      mergeMap((action: ProductItemAction) => {
-        return this.productService.editProduct(action.payload).pipe(
-          map(data => {
-            return new EditProductActionSuccess(data)
-          }) ,
-          catchError(err => of(new EditProductActionError(err.message)))
-        ) ;
+  editProductEffect$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType<EditProductAction>(ProductItemActionType.EDIT_PRODUCT),
+      mergeMap(action => {
+        // Из payload достаём id и всю остальную часть как "changes"
+        const { productId, ...changes } = action.payload as CreatedProduct;
+
+        if (!productId) {
+          return of(new EditProductActionError('Product ID is undefined'));
+        }
+
+        return this.productService
+          .editProduct(productId, changes)        // <-- здесь два аргумента
+          .pipe(
+            map(updated => new EditProductActionSuccess(updated)),
+            catchError(err => of(new EditProductActionError(err.message)))
+          );
       })
     )
   );

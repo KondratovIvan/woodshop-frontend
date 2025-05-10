@@ -1,150 +1,130 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {CreatedProduct, ProductsCategory} from "../../models/product.model";
-import {Color, Currency} from "../../models/common.model";
-import {Store} from "@ngrx/store";
-import {DataStateEnum, ProductState} from "../../ngrx/productsState/products.reducer";
-import {map, Observable} from "rxjs";
-import {ProductItemState} from "../../ngrx/Product-item-State/productItem.reducers";
-import {EditProductAction, GetProductItemAction} from "../../ngrx/Product-item-State/productItem.actions";
-import {Router} from "@angular/router";
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ProductService } from '../../services/productService/product.service';
+import {
+  ProductsCategory as ProductsCategoryMap,
+  CreatedProduct,
+  Product
+} from '../../models/product.model';
+import { Color, Currency } from '../../models/common.model';
 
 @Component({
   selector: 'app-edit-product',
   templateUrl: './edit-product.component.html',
   styleUrls: ['./edit-product.component.css']
 })
-export class EditProductComponent implements OnInit{
-  productState : ProductItemState | null = null
-  editProductFormGroup!: FormGroup ;
-  categories : string[] =  Object.values(ProductsCategory).map((val) => String(val));
-  colors : string[] =  Object.values(Color).map((val) => String(val));
-  currencies : string[] =  Object.values(Currency).map((val) => String(val));
-  submitted:boolean = false
-  public dataState = DataStateEnum ;
-  editedProduct! : ProductItemState ;
-  productImages!: string[]
+export class EditProductComponent implements OnInit {
+  editForm!: FormGroup;
+  submitted = false;
+  isLoading = true;
+  productId!: string;
 
-  constructor(private store : Store<any> , private fb : FormBuilder , private router : Router) {
-  }
+  categoryOptions = Object.values(ProductsCategoryMap);
+  colors         = Object.values(Color);
+  currencies     = Object.values(Currency);
+
+  constructor(
+    private fb: FormBuilder,
+    private productService: ProductService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.store.subscribe(
-      s => {
-          this.productState=s.productItemState ;
-          if(s.productItemState.dataState == this.dataState.LOADED){
-            this.productImages = s.productItemState.product.productImagesBas64 ;
-            this.editProductFormGroup=this.fb.group({
-              productName : [s.productItemState.product.name , Validators.required],
-              productQuantity : [s.productItemState.product.quantity , Validators.required],
-              productImage1 : [null],
-              productImage2 : [null],
-              productImage3 : [null],
-              productBrand : [s.productItemState.product.brand , Validators.required],
-              productPrice : [s.productItemState.product.productPrice.price , Validators.required],
-              productCurrency : [s.productItemState.product.productPrice.currency , Validators.required],
-              productColors : [s.productItemState.product.colors , Validators.required],
-              productSelected : [s.productItemState.product.selected , Validators.required],
-              productDescription : [s.productItemState.product.description , Validators.required],
-              productHeight: [s.productItemState.product.dimension.height,  Validators.required],
-              productWidth: [s.productItemState.product.dimension.width,  Validators.required],
-              productLarger: [s.productItemState.product.dimension.larger , Validators.required],
-              productWeight: [s.productItemState.product.dimension.weight, Validators.required],
-              productCategory : [s.productItemState.product.category, Validators.required]
-            })
-          }
-      }
-    )
-
-
-    let confirmationShown = false;
-    this.store.subscribe(
-      s => {
-        if(s.productItemState.dataState == DataStateEnum.EDITED)
-          this.editedProduct = s.productItemState
-        if(this.editedProduct && this.editedProduct.product  && !confirmationShown){
-          console.log(this.editedProduct.product?.productId) ;
-          confirmationShown = true;
-          let confirmation : boolean = confirm("product of name " + this.editedProduct.product.name + " has been created edited " +
-            "confirm to go to see product details");
-          if(confirmation == true )
-          {
-            this.router.navigateByUrl("/product-details") ;
-            this.store.dispatch(new GetProductItemAction(this.editedProduct.product)) ;
-          }
-        }
-
-      }
-    )
+    // получаем id из URL
+    this.productId = this.route.snapshot.paramMap.get('id')!;
+    // загружаем продукт
+    this.productService.getProductById(this.productId).subscribe({
+      next: p => this.initForm(p),
+      error: () => this.router.navigate(['/home'])
+    });
   }
 
-  editProduct() {
-    this.submitted = true ;
+  private initForm(p: Product) {
+    // строим formGroup с валидаторами
+    this.editForm = this.fb.group({
+      productName:     [p.name,      Validators.required],
+      productQuantity: [p.quantity,  Validators.required],
+      productBrand:    [p.brand,     Validators.required],
+      productPrice:    [p.productPrice.price,    Validators.required],
+      productCurrency: [p.productPrice.currency, Validators.required],
+      productCategory: [p.category,  Validators.required],
+      productColors:   [p.colors,    Validators.required],
+      productDescription: [p.description, Validators.required],
+      productSelected: [p.selected],
 
-    if(this.editProductFormGroup.invalid) return ;
+      productHeight:  [p.dimension.height, [Validators.required, Validators.min(0.01)]],
+      productWidth:   [p.dimension.width,  [Validators.required, Validators.min(0.01)]],
+      productLarger:  [p.dimension.larger, [Validators.required, Validators.min(0.01)]],
+      productWeight:  [p.dimension.weight, [Validators.required, Validators.min(0.01)]],
 
-    let selectedImage: string[] = []
-    for (let i = 1; i < 4; i++) {
-      const controlName = `productImage${i}` ;
-        if(this.editProductFormGroup.get(controlName)?.value){
-          selectedImage.push(this.editProductFormGroup.get(controlName)?.value)
-        }
-        else
-          selectedImage.push(this.productImages[i-1])
-    }
+      productImage1: [p.productImagesBas64?.[0] || null, Validators.required],
+      productImage2: [p.productImagesBas64?.[1] || null, Validators.required],
+      productImage3: [p.productImagesBas64?.[2] || null, Validators.required]
+    });
 
-    let product: CreatedProduct ={
-      productId: this.productState?.product?.productId ,
-      name : this.editProductFormGroup.get("productName")?.value ,
-      quantity : this.editProductFormGroup.get("productQuantity")?.value ,
-      category: this.editProductFormGroup.get("productCategory")?.value ,
-      description: this.editProductFormGroup.get("productDescription")?.value ,
-      productPrice : {price :this.editProductFormGroup.get("productPrice")?.value ,
-        currency:this.editProductFormGroup.get("productCurrency")?.value ,
-        symbol: "MAD" } ,
-      productImagesBas64: selectedImage,
-      colors: this.editProductFormGroup.get("productColors")?.value ,
-      brand : this.editProductFormGroup.get("productBrand")?.value ,
-      selected : this.editProductFormGroup.get("productSelected")?.value ,
-      status : "AVAILABLE" ,
-      dimension : {
-        height :this.editProductFormGroup.get("productHeight")?.value ,
-        weight :this.editProductFormGroup.get("productWeight")?.value ,
-        larger :this.editProductFormGroup.get("productLarger")?.value ,
-        width:this.editProductFormGroup.get("productWidth")?.value
-      } ,
-    }
-    this.store.dispatch(new EditProductAction(product)) ;
+    this.isLoading = false;
   }
 
-  onFileSelected(event: any , imageNum: number) {
-    const file: File = event.target.files[0];
-    const reader: FileReader = new FileReader();
-    reader.onloadend = () => {
-      const base64String: string = reader.result as string;
-      switch (imageNum){
-        case 1:
-          this.editProductFormGroup.patchValue({
-            productImage1: base64String
-          });
-          break;
-        case 2:
-          this.editProductFormGroup.patchValue({
-            productImage2: base64String,
-          });
-          break;
-        case 3:
-          this.editProductFormGroup.patchValue({
-            productImage3: base64String
-          });
-          break;
-      }
-
+  onFileSelected(event: Event, num: number): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.editForm.patchValue({ [`productImage${num}`]: reader.result });
     };
-    reader.readAsDataURL(file);
-    event.target.value = ''
+    reader.readAsDataURL(input.files[0]);
+    input.value = '';
   }
 
+  saveChanges(): void {
+    this.submitted = true;
+    if (this.editForm.invalid) {
+      return;
+    }
 
+    const raw = this.editForm.value as any;
+    const changes: Partial<CreatedProduct> = {};
 
+    // текстовые / числовые поля
+    changes.name        = raw.productName;
+    changes.quantity    = raw.productQuantity;
+    changes.brand       = raw.productBrand;
+    changes.description = raw.productDescription;
+    changes.productPrice = {
+      price:    raw.productPrice,
+      currency: raw.productCurrency,
+      symbol:   ''
+    };
+    changes.category   = raw.productCategory;
+    changes.colors     = raw.productColors;
+    changes.selected   = raw.productSelected;
+
+    // размеры
+    changes.dimension = {
+      height: raw.productHeight,
+      width:  raw.productWidth,
+      larger: raw.productLarger,
+      weight: raw.productWeight
+    };
+
+    // изображения
+    changes.productImagesBas64 = [
+      raw.productImage1,
+      raw.productImage2,
+      raw.productImage3
+    ];
+
+    this.productService.editProduct(this.productId, changes).subscribe({
+      next: () => {
+        alert('Product updated successfully');
+        this.router.navigate(['/product-details', this.productId]);
+      },
+      error: err => {
+        console.error('Failed to save', err);
+        alert('Unable to save changes');
+      }
+    });
+  }
 }

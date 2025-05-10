@@ -1,0 +1,129 @@
+<div class="container">
+    <div class="row">
+      <app-sidecar> </app-sidecar>
+      <div class="profile-content">
+        <div class="user-info">
+          <img src="/assets/img/profile.png" alt="user avatar" class="avatar" />
+          <div *ngIf="!isEditing" class="user-info-main">
+            <div class="user-info-text">
+              <h2>{{ user.firstName }} {{ user.lastName }}</h2>
+              <p>Username: {{ user.userName }}</p>
+              <p>Email: {{ user.email }}</p>
+            </div>
+            <div class="user-info-buttons">
+              <button class="btn edit-btn" (click)="startEdit()">Edit profile</button>
+              <button class="btn delete-btn" (click)="deleteAccount()">Forget me</button>
+            </div>
+          </div>
+          <form
+            *ngIf="isEditing"
+            class="edit-form"
+            #editForm="ngForm"
+            (ngSubmit)="saveEdit()"
+            novalidate
+          >
+            <label>
+              Name:
+              <input
+                type="text"
+                [(ngModel)]="editName"
+                name="name"
+                required
+                pattern="^[a-zA-Zа-яА-ЯіІїЇєЄґҐёЁ]+(?: [a-zA-Zа-яА-ЯіІїЇєЄґҐёЁ]+)*$"
+                #nameInput="ngModel"
+              />
+            </label>
+            <div class="error" *ngIf="nameInput.invalid && nameInput.touched">
+              <small *ngIf="nameInput.errors?.['required']"
+                >Name is required.</small
+              >
+              <small *ngIf="nameInput.errors?.['pattern']"
+                >Enter a valid name.</small
+              >
+            </div>
+            <label>
+              Email:
+              <input
+                type="email"
+                [(ngModel)]="editEmail"
+                name="email"
+                required
+                email
+                #emailInput="ngModel"
+              />
+            </label>
+            <div class="error" *ngIf="emailInput.invalid && emailInput.touched">
+              <small *ngIf="emailInput.errors?.['required']"
+                >Email is required.</small
+              >
+              <small *ngIf="emailInput.errors?.['email']"
+                >Enter a valid email address.</small
+              >
+            </div>
+            <div class="edit-btns">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="editForm.invalid"
+              >
+                Save
+              </button>
+              <button type="button" class="btn btn-wood" (click)="cancelEdit()">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+        <div class="orders-section">
+          <h3>Your orders</h3>
+          <ng-container *ngIf="orders.length > 0; else noOrders">
+            <table>
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Product</th>
+                  <th>Quantity</th>
+                  <th>Total price</th>
+                  <th>Color</th>
+                  <th>Order date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let order of orders">
+                  <tr *ngFor="let item of order.items">
+                    <td>
+                      <img
+                        src="{{ item.product.productImagesBas64[0] }}"
+                        alt="product image"
+                        class="product-image"
+                      />
+                    </td>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>
+                      {{ item.product.productPrice.price * item.quantity }}
+                      {{ item.product.productPrice.symbol }}
+                    </td>
+                    <td>{{ item.product.pickedColor }}</td>
+                    <td>
+                      {{ order.createdAt | date: 'yyyy-MM-dd' }}<br />
+                      {{ order.createdAt | date: 'HH:mm:ss' }}
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </ng-container>
+        
+          <ng-template #noOrders>
+            <p class="no-orders-text">You haven't made any orders yet.</p>
+            <img
+              src="/assets/img/no-orders.png"
+              alt="no-orders image"
+              class="no-orders-image"
+            />
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>

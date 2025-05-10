@@ -19,6 +19,8 @@ import { FaqComponent } from './components/footer/faq/faq.component';
 import { RefundComponent } from './components/footer/refund/refund.component';
 import { SupportComponent } from './components/footer/support/support.component';
 import { PartnerComponent } from './components/footer/partner/partner.component';
+import { ProfileComponent } from './components/profile/profile.component';
+
 
 const routes: Routes = [
   {
@@ -37,7 +39,7 @@ const routes: Routes = [
   { path: 'contact', component: ContactComponent },
   {path : "admin" , component:AdminDashboardComponent , canActivate:[AuthGuard]  , data : {roles : ['ADMIN']}},
   {path : "addProduct" , component:AddProductComponent ,canActivate:[AuthGuard]  , data : {roles : ['ADMIN']}},
-  {path : "edit-product" , component:EditProductComponent , canActivate:[AuthGuard]  , data : {roles : ['ADMIN']}},
+  {path: 'edit-product/:id', component: EditProductComponent , canActivate:[AuthGuard]  , data : {roles : ['ADMIN']}},
   { path: 'home', component: HomeComponent },
   { path: '', component: HomeComponent },
   { path: 'delivery',          component: DeliveryComponent },
@@ -49,6 +51,7 @@ const routes: Routes = [
   { path: 'refund',            component: RefundComponent },
   { path: 'support',           component: SupportComponent },
   { path: 'partner',           component: PartnerComponent },
+  { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard], data: { roles: ['USER', 'ADMIN'] }},
 ];
 
 @NgModule({
