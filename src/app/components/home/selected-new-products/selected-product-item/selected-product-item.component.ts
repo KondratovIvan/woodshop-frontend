@@ -19,12 +19,3 @@ export class SelectedProductItemComponent {
     this.router.navigateByUrl("/product-details");
   }
 }
-
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-selected-product-item',
-//   templateUrl: './selected-product-item.component.html',
-//   styleUrls: ['./selected-product-item.component.css'],
-// })
-// export class SelectedProductItemComponent {}

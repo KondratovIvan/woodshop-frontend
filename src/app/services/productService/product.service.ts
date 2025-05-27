@@ -24,20 +24,6 @@ export class ProductService implements OnInit{
   }
 
 
-
-  // public getProductsPage(size: number, page: number): Observable<ProductsPage> {
-  //   return this.http.get<Product[]>(Hosts.productService + "/products?page=" + page + "&size=" + size).pipe(
-  //     switchMap(products => {
-  //       return this.http.get<PageInfo>(Hosts.productService + "/api/products/" + size).pipe(
-  //         map(pageInfo => {
-  //           return { products, pageInfo: pageInfo };
-  //         })
-  //       );
-  //     })
-  //   );
-  // }
-
-
   public getSelectedProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(this.productService + "/products/search/findBySelected?selected=true")
   }

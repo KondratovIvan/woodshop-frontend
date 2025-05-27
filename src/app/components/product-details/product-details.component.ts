@@ -16,9 +16,7 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./product-details.component.css'],
 })
 export class ProductDetailsComponent implements OnInit {
-  // Храним всё состояние
   productItem$ = this.store.pipe(map((state) => state.productItemState));
-  // Локальное свойство для ID продукта
   productId?: string;
 
   reviewText: string = '';
@@ -35,12 +33,9 @@ export class ProductDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Подписываемся на состояние продукта
     this.productItem$.subscribe((itemState: ProductItemState) => {
       if (itemState.dataState === DataStateEnum.LOADED && itemState.product) {
-        // Сохраняем productId в локальное свойство
         this.productId = itemState.product.productId;
-        // Если нужно отправить событие "просмотр продукта"
         if (this.secService.profile.id) {
           this.productService.publishEvent(
             this.productId,
@@ -48,7 +43,6 @@ export class ProductDetailsComponent implements OnInit {
             this.secService.profile.id
           );
         }
-        // Загружаем отзывы сразу, как только узнали productId
         this.getReviews();
       }
     });
@@ -65,12 +59,11 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   submitReview() {
-    // Убедимся, что есть текст, рейтинг и productId
     if (this.reviewText.trim() && this.rating > 0 && this.productId) {
       const reviewData = {
         firstName: this.secService.profile.firstName,
         lastName: this.secService.profile.lastName,
-        productId: this.productId,  // <-- используем локальное свойство
+        productId: this.productId,
         rating: this.rating,
         reviewText: this.reviewText,
         date: new Date().toISOString(),
@@ -81,7 +74,6 @@ export class ProductDetailsComponent implements OnInit {
         .subscribe({
           next: (response) => {
             console.log('Отзыв успешно отправлен:', response);
-            // Обновим список отзывов на UI (без повторного запроса)
             if (this.secService.profile.id) {
               this.reviews.push({
                 firstName: this.secService.profile.firstName!,
@@ -91,13 +83,12 @@ export class ProductDetailsComponent implements OnInit {
                 date: new Date().toISOString(),
               });
             }
-            // Очистим поля формы
             this.reviewText = '';
             this.rating = 0;
           },
           error: (error) => {
-            console.error('Ошибка при отправке отзыва:', error);
-            alert('Не удалось отправить отзыв. Попробуйте снова.');
+            console.error('Error on review sending:', error);
+            alert('Fail on review sending. Try again.');
           },
         });
     } else {
@@ -106,7 +97,6 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   getReviews() {
-    // Если нет productId, нет смысла делать запрос
     if (!this.productId) return;
 
     this.http
@@ -118,7 +108,7 @@ export class ProductDetailsComponent implements OnInit {
           this.reviews = data;
         },
         error: (error) => {
-          console.error('Ошибка при получении отзывов:', error);
+          console.error('Error on reviews fetching:', error);
         },
       });
   }

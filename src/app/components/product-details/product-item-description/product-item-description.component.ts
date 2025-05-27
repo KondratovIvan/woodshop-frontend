@@ -30,7 +30,6 @@ export class ProductItemDescriptionComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.product?.colors?.length) {
-      // по умолчанию первый цвет
       this.addProductForm.patchValue({ color: this.product.colors[0] });
     }
   }
@@ -61,7 +60,6 @@ export class ProductItemDescriptionComponent implements OnInit {
   onEditProduct(): void {
     if (!this.product) return;
     this.store.dispatch(new GetProductItemAction(this.product));
-    // ← именно так:
     this.router.navigate(['/edit-product', this.product.productId]);
   }
 }

@@ -1,4 +1,3 @@
-/* Цветовые переменные */
 :root {
     --wood-dark: #5D4037;
     --wood-medium: #795548;
@@ -7,7 +6,6 @@
     --accent-green: #558B2F;
   }
   
-  /* Внешний контейнер */
   .edit-product-container {
     background-color: var(--wood-pale);
     padding: 2rem;
@@ -17,7 +15,6 @@
     margin: 0 auto;
   }
   
-  /* Fieldset с лёгкой текстурой */
   .edit-product-fieldset {
     border: none;
     padding: 2rem;
@@ -35,7 +32,6 @@
     background-size: 4px 4px;
   }
   
-  /* Группа одного поля */
   .control-group {
     display: flex;
     flex-direction: column;
@@ -43,14 +39,12 @@
     margin-bottom: 1.5rem;
   }
   
-  /* Подпись поля */
   .control-group label {
     color: var(--wood-dark);
     font-weight: 500;
     font-size: 0.95rem;
   }
   
-  /* Общий стиль для input, select, textarea */
   .custom-input,
   .custom-select,
   .custom-textarea {
@@ -70,7 +64,6 @@
     box-shadow: 0 0 0 2px rgba(93, 64, 55, 0.1);
   }
   
-  /* Превью картинок */
   .upload-status {
     display: flex;
     align-items: center;
@@ -86,13 +79,11 @@
     border-radius: 4px;
   }
   
-  /* Метка загружено */
   .marker {
     color: var(--accent-green);
     font-size: 0.9rem;
   }
   
-  /* Кнопка сохранить */
   .save-btn {
     padding: 0.8rem 1.5rem;
     font-weight: 600;

@@ -27,7 +27,6 @@ export class ProductItemEffect {
     this.actions$.pipe(
       ofType<EditProductAction>(ProductItemActionType.EDIT_PRODUCT),
       mergeMap(action => {
-        // Из payload достаём id и всю остальную часть как "changes"
         const { productId, ...changes } = action.payload as CreatedProduct;
 
         if (!productId) {
@@ -35,7 +34,7 @@ export class ProductItemEffect {
         }
 
         return this.productService
-          .editProduct(productId, changes)        // <-- здесь два аргумента
+          .editProduct(productId, changes)
           .pipe(
             map(updated => new EditProductActionSuccess(updated)),
             catchError(err => of(new EditProductActionError(err.message)))

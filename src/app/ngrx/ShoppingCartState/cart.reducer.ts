@@ -19,13 +19,11 @@ const initialState: ShoppingCartState = {
 
 export function ShoppingCartReducer(
   state: ShoppingCartState = initialState,
-  action: Action                          // ← принимаем базовый Action
+  action: Action
 ): ShoppingCartState {
-  // приведение к нашему узкому типу
   const cartAction = action as CartAction;
 
   switch (cartAction.type) {
-    // все запросы переводим в loading
     case CartActionType.GET_CART:
     case CartActionType.ADD_PRODUCT_TO_CART:
     case CartActionType.DELETE_PRODUCT_FROM_CART:
@@ -33,7 +31,6 @@ export function ShoppingCartReducer(
     case CartActionType.DECREASE_PRODUCT_QUANTITY:
       return { ...state, dataState: DataStateEnum.LOADING };
 
-    // успешные ответы кладём payload в стор
     case CartActionType.GET_CART_SUCCESS:
     case CartActionType.ADD_PRODUCT_TO_CART_SUCCESS:
     case CartActionType.DELETE_PRODUCT_FROM_CART_SUCCESS:
@@ -45,7 +42,6 @@ export function ShoppingCartReducer(
         shoppingCart: cartAction.payload
       };
 
-    // ошибки
     case CartActionType.GET_CART_ERROR:
     case CartActionType.ADD_PRODUCT_TO_CART_ERROR:
     case CartActionType.DELETE_PRODUCT_FROM_CART_ERROR:

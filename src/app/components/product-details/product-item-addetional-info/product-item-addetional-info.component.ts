@@ -12,13 +12,3 @@ export class ProductItemAddetionalInfoComponent {
   constructor(public productService: ProductService) {
   }
 }
-
-// import {Component, } from '@angular/core';
-
-
-// @Component({
-//   selector: 'app-product-item-addetional-info',
-//   templateUrl: './product-item-addetional-info.component.html',
-//   styleUrls: ['./product-item-addetional-info.component.css']
-// })
-// export class ProductItemAddetionalInfoComponent {}

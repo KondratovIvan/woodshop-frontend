@@ -32,9 +32,7 @@ export class EditProductComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // получаем id из URL
     this.productId = this.route.snapshot.paramMap.get('id')!;
-    // загружаем продукт
     this.productService.getProductById(this.productId).subscribe({
       next: p => this.initForm(p),
       error: () => this.router.navigate(['/home'])
@@ -42,7 +40,6 @@ export class EditProductComponent implements OnInit {
   }
 
   private initForm(p: Product) {
-    // строим formGroup с валидаторами
     this.editForm = this.fb.group({
       productName:     [p.name,      Validators.required],
       productQuantity: [p.quantity,  Validators.required],
@@ -87,7 +84,6 @@ export class EditProductComponent implements OnInit {
     const raw = this.editForm.value as any;
     const changes: Partial<CreatedProduct> = {};
 
-    // текстовые / числовые поля
     changes.name        = raw.productName;
     changes.quantity    = raw.productQuantity;
     changes.brand       = raw.productBrand;
@@ -101,7 +97,6 @@ export class EditProductComponent implements OnInit {
     changes.colors     = raw.productColors;
     changes.selected   = raw.productSelected;
 
-    // размеры
     changes.dimension = {
       height: raw.productHeight,
       width:  raw.productWidth,
@@ -109,7 +104,6 @@ export class EditProductComponent implements OnInit {
       weight: raw.productWeight
     };
 
-    // изображения
     changes.productImagesBas64 = [
       raw.productImage1,
       raw.productImage2,

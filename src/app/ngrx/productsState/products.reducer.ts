@@ -42,7 +42,6 @@ export function productReducer(
   const act = action as ProductAction;
 
   switch (act.type) {
-    // ——— ВСЕ ТОВАРЫ ————————————————————————————————
     case ProductsActionType.GET_ALL_PRODUCTS:
       return { ...state, dataState: DataStateEnum.LOADING };
 
@@ -53,7 +52,6 @@ export function productReducer(
         products:    act.payload._embedded.products,
         pageInfo:    act.payload.page,
         fetchMethode: FetchMethode.ALL,
-        // при ALL мы сбрасываем критерии
         searchCriteria: { keyword: '', category: '' },
       };
 
@@ -65,7 +63,6 @@ export function productReducer(
       };
 
 
-    // ——— ПОСТРАНИЧНЫЙ ВЫГРУЗКА ————————————————————
     case ProductsActionType.GET_PRODUCTS_PAGE:
       return { ...state, dataState: DataStateEnum.LOADING };
 
@@ -76,7 +73,6 @@ export function productReducer(
         products:     act.payload._embedded.products,
         pageInfo:     act.payload.page,
         fetchMethode: FetchMethode.PAGE,
-        // при чистой постраничке не меняем searchCriteria
       };
 
     case ProductsActionType.GET_PRODUCTS_PAGE_ERROR:
@@ -87,9 +83,7 @@ export function productReducer(
       };
 
 
-    // ——— ПОИСК ПО КЛЮЧЕВОМУ СЛОВУ —————————————————
     case ProductsActionType.GET_PRODUCTS_PAGE_BY_KEYWORD:
-      // сохраняем keyword прямо в стейт
       return {
         ...state,
         dataState:      DataStateEnum.LOADING,
@@ -106,7 +100,6 @@ export function productReducer(
         dataState:    DataStateEnum.LOADED,
         products:     act.payload._embedded.products,
         pageInfo:     act.payload.page,
-        // fetchMethode и searchCriteria уже выставлены в предыдущем шаге
       };
 
     case ProductsActionType.GET_PRODUCTS_PAGE_BY_KEYWORD_ERROR:
@@ -117,7 +110,6 @@ export function productReducer(
       };
 
 
-    // ——— ПОИСК ПО КАТЕГОРИИ ——————————————————————
     case ProductsActionType.GET_PRODUCTS_PAGE_BY_CATEGORY:
       return {
         ...state,
@@ -145,7 +137,6 @@ export function productReducer(
       };
 
 
-    // ——— ЯВНАЯ УСТАНОВКА КРИТЕРИЕВ (если понадобится) ——
     case ProductsActionType.SET_SEARCH_CRITERIA:
       return {
         ...state,

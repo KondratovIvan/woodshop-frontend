@@ -186,7 +186,7 @@ export class SearchedProductsListComponent implements OnInit {
         lists.forEach((list, i) => {
           this.productReviewsCount[ids[i]] = list.length;
         }),
-      error: (err) => console.error('Ошибка загрузки отзывов:', err),
+      error: (err) => console.error('Error on reviews fetching:', err),
     });
   }
 }

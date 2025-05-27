@@ -42,13 +42,6 @@ export class HeaderComponent implements OnInit {
       map((state) => state.shoppingCartState)
     );
 
-    // if(this.securityService.profile){
-    //   if(this.securityService.profile.id)
-    //     this.store.dispatch(new GetShoppingCartAction(this.securityService.profile.id )) ;
-    // }
-    // if(this.securityService.profile){
-    //   console.log(this.securityService.profile.id)
-    // }
   }
 
   onHome() {
@@ -84,12 +77,3 @@ export class HeaderComponent implements OnInit {
 
   loging() {}
 }
-
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-header',
-//   templateUrl: './header.component.html',
-//   styleUrls: ['./header.component.css'],
-// })
-// export class HeaderComponent {}

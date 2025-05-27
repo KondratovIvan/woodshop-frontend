@@ -1,5 +1,3 @@
-// src/app/services/shoppingCartService/shopping-cart.service.ts
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -11,7 +9,6 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class ShoppingCartService {
-  // теперь — только host:port, без /api
   private baseUrl = environment.customerService;
 
   constructor(private http: HttpClient) {}
@@ -50,7 +47,6 @@ export class ShoppingCartService {
     return this.http.put<ShoppingCart>(url, {});
   }
 
-  /** утилита для подсчёта */
   calcTotalPrice(cart: ShoppingCart): number {
     return cart.items.reduce(
       (sum, item) => sum + item.quantity * item.product.productPrice.price,

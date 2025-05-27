@@ -5,12 +5,6 @@ import { HttpClient } from '@angular/common/http'
 import { Router } from '@angular/router';
 import { AfterViewInit } from '@angular/core';
 
-// interface Order {
-//   id: number;
-//   date: string;
-//   total: number;
-//   status: string;
-// }
 
 @Component({
   selector: 'app-profile',
@@ -27,18 +21,8 @@ export class ProfileComponent implements AfterViewInit {
     email: this.secService.profile ? this.secService.profile.email : 'N/A',
   };
 
-  // user: Partial<Customer> = {
-  //   firstname: 'Firstname',
-  //   lastname: 'Secondname',
-  //   email: 'user@example.com',
-  // };
-
   orders: any[] = [];
 
-  // orders = [
-  //   { id: 101, date: '2024-04-01', total: 2999, status: 'Доставлен' },
-  //   { id: 102, date: '2024-04-12', total: 1499, status: 'В обработке' },
-  // ];
 
   ngAfterViewInit(): void {
     const checkProfile = setInterval(() => {
@@ -49,9 +33,9 @@ export class ProfileComponent implements AfterViewInit {
         this.user.lastName = profile.lastName || 'N/A';
         this.user.email = profile.email || 'N/A';
         this.getOrders();
-        clearInterval(checkProfile); // остановить проверку
+        clearInterval(checkProfile);
       }
-    }, 100); // проверяем каждые 100мс
+    }, 100);
   }
 
   getOrders(): void {
@@ -119,7 +103,6 @@ export class ProfileComponent implements AfterViewInit {
   const customerId = this.secService.profile?.id;
   if (!customerId) return;
 
-  // if (!confirm('Are you sure you want to delete your account ?')) return;
 
     this.http.delete(`http://localhost:8081/api/customers/${customerId}`).subscribe({
       next: () => {

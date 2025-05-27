@@ -20,7 +20,6 @@ export class PagginationComponent {
   @Input() payload!: string;
 
   constructor(private router: Router, private store: Store) {}
-  // check the fetch methode to continue the pagination in the same context
   onPageHandle(index: number) {
     console.log(this.payload);
     switch (this.fetchMethode) {
@@ -62,12 +61,3 @@ export class PagginationComponent {
     }
   }
 }
-
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-paggination',
-//   templateUrl: './paggination.component.html',
-//   styleUrls: ['./paggination.component.css'],
-// })
-// export class PagginationComponent {}
