@@ -98,13 +98,13 @@ export class CheckoutComponent implements OnInit {
       .pipe(take(1))
       .subscribe((state) => {
         const customerId = this.secService.profile!.id;
-        const totalUAH = this.shoppingCartService.calcTotalPrice(
+        const totalUSD = this.shoppingCartService.calcTotalPrice(
           state.shoppingCart ?? { items: [], customerId: '0', id: '0' }
         );
-        const totalPennies = Math.round(totalUAH * 100);
+        const totalPennies = Math.round(totalUSD * 100);
         const body = {
           amount: totalPennies,
-          ccy: 980,
+          ccy: 840,
           merchantPaymInfo: {
             reference: Date.now(),
             destination: 'Your order in the WoodShop',

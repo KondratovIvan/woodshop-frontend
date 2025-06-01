@@ -1,15 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
-
-import {
-  CreatedProduct,
-  ProductsCategory as ProductsCategoryMap,
-} from '../../models/product.model';
+import { ProductService } from '../../services/productService/product.service';
+import { CreatedProduct, ProductsCategory as ProductsCategoryMap } from '../../models/product.model';
 import type { ProductsCategory as ProductsCategoryType } from '../../models/product.model';
 import { Color, Currency } from '../../models/common.model';
-import { SaveProductAction } from '../../ngrx/Product-item-State/productItem.actions';
 
 @Component({
   selector: 'app-add-product',
@@ -29,7 +24,7 @@ export class AddProductComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private store: Store,
+    private productService: ProductService,
     private router: Router
   ) {}
 
@@ -47,7 +42,7 @@ export class AddProductComponent implements OnInit {
       productSelected: [false],
       productDescription: ['', Validators.required],
       productHeight: [0, [Validators.required, Validators.min(0.01)]],
-      productWidth:  [0, [Validators.required, Validators.min(0.01)]],
+      productWidth: [0, [Validators.required, Validators.min(0.01)]],
       productLarger: [0, [Validators.required, Validators.min(0.01)]],
       productWeight: [0, [Validators.required, Validators.min(0.01)]],
       productCategory: ['', Validators.required],
@@ -69,13 +64,9 @@ export class AddProductComponent implements OnInit {
       productPrice: {
         price: f.productPrice,
         currency: f.productCurrency,
-        symbol: '',
+        symbol: f.productCurrency,
       },
-      productImagesBas64: [
-        f.productImage1,
-        f.productImage2,
-        f.productImage3,
-      ],
+      productImagesBas64: [f.productImage1, f.productImage2, f.productImage3],
       colors: f.productColors,
       brand: f.productBrand,
       selected: f.productSelected,
@@ -88,9 +79,16 @@ export class AddProductComponent implements OnInit {
       },
     };
 
-    // dispatch and immediately alert
-    this.store.dispatch(new SaveProductAction(product));
-    alert(`Product "${product.name}" has been added!`);
+    this.productService.saveProduct(product).subscribe({
+      next: created => {
+        alert(`Product "${created.name}" has been added!`);
+        this.router.navigate(['/products']);
+      },
+      error: err => {
+        console.error('Error saving product:', err);
+        alert('Error on saving product.');
+      },
+    });
   }
 
   onFileSelected(event: Event, imageNum: number): void {
