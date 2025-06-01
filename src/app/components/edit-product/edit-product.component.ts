@@ -91,7 +91,7 @@ export class EditProductComponent implements OnInit {
     changes.productPrice = {
       price:    raw.productPrice,
       currency: raw.productCurrency,
-      symbol:   ''
+      symbol:   raw.productCurrency
     };
     changes.category   = raw.productCategory;
     changes.colors     = raw.productColors;
