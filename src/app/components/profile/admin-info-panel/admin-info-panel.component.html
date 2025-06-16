@@ -1,0 +1,27 @@
+<div class="admin-panel-container">
+  <h2 class="panel-title">Dashboard Metrics</h2>
+
+  <div class="color-legend">
+    <p>
+      <strong>Color guide:</strong>
+      <span class="legend-item"><span class="dot dot-red"></span> Red indicates low performance and areas needing improvement</span>
+      <span class="legend-item"><span class="dot dot-purple"></span> Purple indicates moderate activity</span>
+      <span class="legend-item"><span class="dot dot-green"></span> Green indicates high performance — a benchmark to strive for</span>
+    </p>
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-box">
+      <h3>Product Clicks</h3>
+      <canvas #clicksChart></canvas>
+    </div>
+    <div class="chart-box">
+      <h3>Searches by Category</h3>
+      <canvas #categoryChart></canvas>
+    </div>
+    <div class="chart-box">
+      <h3>Searches by Keyword</h3>
+      <canvas #keywordChart></canvas>
+    </div>
+  </div>
+</div>

@@ -35,10 +35,37 @@ export class ProductService implements OnInit{
     return this.http.get<Product[]>(this.productService + "/products/search/findByCategory?category=" + payload.data +"&page=" + payload.pageSize.page +"&size="+payload.pageSize.size)
   }
 
-  public publishEvent(productId : string , eventType : EventType , customerId : string){
-      this.http.get<void>(this.productService + "/api/products/event/"+productId +"/" + customerId + "/" + eventType.toString()).subscribe(value =>
-      {
-      })
+  public recordClick(productName: string, customerId: string): void {
+    const url = `${this.productService}/api/products/event/click/${productName}/${customerId}`;
+    this.http
+      .get<void>(url)
+      .subscribe({
+        next: () => console.log(`Click event sent: product=${productName}`),
+        error: err => console.error('Error recording click event', err)
+      });
+  }
+
+  public recordCategoryView(category: string, customerId: string): void {
+    const cat = encodeURIComponent(category);
+    const url = `${this.productService}/api/products/event/category/${cat}/${customerId}`;
+    this.http
+      .get<void>(url)
+      .subscribe({
+        next: () => console.log(`Category view sent: category=${category}`),
+        error: err => console.error('Error recording category view', err)
+      });
+  }
+
+  public recordKeywordSearch(keyword: string, customerId: string): void {
+    if (!keyword?.trim()) return;
+    const key = encodeURIComponent(keyword);
+    const url = `${this.productService}/api/products/event/keyword/${key}/${customerId}`;
+    this.http
+      .get<void>(url)
+      .subscribe({
+        next: () => console.log(`Keyword search sent: keyword=${keyword}`),
+        error: err => console.error('Error recording keyword search', err)
+      });
   }
 
   public saveProduct(product : CreatedProduct):Observable<Product>{

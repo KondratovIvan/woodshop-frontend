@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { map, Observable, forkJoin } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
+import { map, Observable, forkJoin, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 import {
@@ -12,10 +13,10 @@ import {
   GetProductsPageAction,
   GetProductsPageByCategoryAction,
   GetProductsPageByKeyWordAction,
-} from 'src/app/ngrx/productsState/product.actions';
+  SetSearchCriteria
+} from '../../ngrx/productsState/product.actions';
 import { ProductService } from '../../services/productService/product.service';
 import { SecurityService } from '../../security/security.service';
-import { EventType } from '../../models/common.model';
 import { Product } from '../../models/product.model';
 
 @Component({
@@ -23,12 +24,12 @@ import { Product } from '../../models/product.model';
   templateUrl: './searched-products-list.component.html',
   styleUrls: ['./searched-products-list.component.css'],
 })
-export class SearchedProductsListComponent implements OnInit {
-  productState$?: Observable<ProductState>;
-  public readonly ProductStateEnum = DataStateEnum;
-  public readonly fetchMethode = FetchMethode;
+export class SearchedProductsListComponent implements OnInit, OnDestroy {
+  productState$: Observable<ProductState>;
+  readonly ProductStateEnum = DataStateEnum;
+  readonly fetchMethode = FetchMethode;
 
-  productReviewsCount: { [id: string]: number } = {};
+  productReviewsCount: Record<string, number> = {};
   allProducts: Product[] = [];
   filteredProducts: Product[] = [];
   sortedProducts: Product[] = [];
@@ -43,65 +44,67 @@ export class SearchedProductsListComponent implements OnInit {
   pageSize = 8;
 
   currentKeyword = '';
-  currentCategory = 'ALL';
+  currentCategory = '';
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private store: Store<any>,
     private productService: ProductService,
     private secSecurity: SecurityService,
     private http: HttpClient
-  ) {}
+  ) {
+    this.productState$ = this.store.select('productState');
+  }
 
   ngOnInit(): void {
-    this.productState$ = this.store.pipe(map((s) => s.productState));
+    this.store
+      .select('searchState')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(({ keyword, category }) => {
+        this.currentKeyword = keyword;
+        this.currentCategory = category;
+        const pageSize = { page: 0, size: 9999 };
 
-    this.store.select('searchState').subscribe(({ keyword, category }) => {
-      this.currentKeyword = keyword;
-      this.currentCategory = category;
-      const pageSize = { page: 0, size: 9999 };
+        if (keyword) {
+          this.store.dispatch(new GetProductsPageByKeyWordAction({ pageSize, data: keyword }));
+        } else if (category && category !== 'ALL') {
+          this.store.dispatch(new GetProductsPageByCategoryAction({ pageSize, data: category }));
+        } else {
+          this.store.dispatch(new GetProductsPageAction(pageSize));
+        }
+      });
 
-      if (keyword) {
-        this.store.dispatch(
-          new GetProductsPageByKeyWordAction({ pageSize, data: keyword })
-        );
-      } else if (category && category !== 'ALL') {
-        this.store.dispatch(
-          new GetProductsPageByCategoryAction({ pageSize, data: category })
-        );
-      } else {
-        this.store.dispatch(new GetProductsPageAction(pageSize));
-      }
-    });
-
-    this.productState$.subscribe((s) => {
-      if (s.dataState === DataStateEnum.LOADED) {
+    this.productState$
+      .pipe(
+        filter(s => s.dataState === DataStateEnum.LOADED),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(s => {
         this.allProducts = s.products;
 
-        const prices = this.allProducts.map((p) => p.productPrice.price);
+        const prices = this.allProducts.map(p => p.productPrice.price);
         this.minAvailablePrice = Math.min(...prices);
         this.maxAvailablePrice = Math.max(...prices);
         this.selectedMaxPrice = this.maxAvailablePrice;
-
-        this.loadReviews(this.allProducts.map((p) => p.productId));
-
         this.currentPage = 0;
+        this.loadReviews(this.allProducts.map(p => p.productId));
         this.applyFilterAndSort();
 
-        const first = s.products[0];
-        if (first && this.secSecurity.profile?.id) {
-          const evt =
-            s.fetchMethode === FetchMethode.SEARCH_BY_CATEGORY
-              ? EventType.SEARCH_BY_CATEGORY
-              : EventType.SEARCH_BY_KEYWORD;
-
-          this.productService.publishEvent(
-            first.productId,
-            evt,
-            this.secSecurity.profile.id
-          );
+        const userId = this.secSecurity.profile?.id;
+        if (userId) {
+          if (s.fetchMethode === FetchMethode.SEARCH_BY_CATEGORY && s.searchCriteria?.category) {
+            this.productService.recordCategoryView(s.searchCriteria.category, userId);
+          } else if (s.fetchMethode === FetchMethode.SEARCH_BY_KEYWORD && s.searchCriteria?.keyword) {
+            this.productService.recordKeywordSearch(s.searchCriteria.keyword, userId);
+          }
         }
-      }
-    });
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   onPriceFilterChanged(maxPrice: number): void {
@@ -136,24 +139,16 @@ export class SearchedProductsListComponent implements OnInit {
 
   private applyFilterAndSort(): void {
     this.filteredProducts = this.allProducts.filter(
-      (p) => p.productPrice.price <= this.selectedMaxPrice
+      p => p.productPrice.price <= this.selectedMaxPrice
     );
 
     let sorted = [...this.filteredProducts];
     switch (this.selectedSortType) {
       case 'date-newest':
-        sorted.sort(
-          (a, b) =>
-            new Date(b.addingDate).getTime() -
-            new Date(a.addingDate).getTime()
-        );
+        sorted.sort((a, b) => new Date(b.addingDate).getTime() - new Date(a.addingDate).getTime());
         break;
       case 'date-oldest':
-        sorted.sort(
-          (a, b) =>
-            new Date(a.addingDate).getTime() -
-            new Date(b.addingDate).getTime()
-        );
+        sorted.sort((a, b) => new Date(a.addingDate).getTime() - new Date(b.addingDate).getTime());
         break;
       case 'price-asc':
         sorted.sort((a, b) => a.productPrice.price - b.productPrice.price);
@@ -162,10 +157,8 @@ export class SearchedProductsListComponent implements OnInit {
         sorted.sort((a, b) => b.productPrice.price - a.productPrice.price);
         break;
       case 'popular':
-        sorted.sort(
-          (a, b) =>
-            (this.productReviewsCount[b.productId] || 0) -
-            (this.productReviewsCount[a.productId] || 0)
+        sorted.sort((a, b) =>
+          (this.productReviewsCount[b.productId] || 0) - (this.productReviewsCount[a.productId] || 0)
         );
         break;
     }
@@ -175,18 +168,11 @@ export class SearchedProductsListComponent implements OnInit {
   }
 
   private loadReviews(ids: string[]): void {
-    forkJoin(
-      ids.map((id) =>
-        this.http.get<any[]>(
-          `http://localhost:8082/api/reviews?productId=${id}`
-        )
-      )
-    ).subscribe({
-      next: (lists) =>
-        lists.forEach((list, i) => {
-          this.productReviewsCount[ids[i]] = list.length;
-        }),
-      error: (err) => console.error('Error on reviews fetching:', err),
+    forkJoin(ids.map(id =>
+      this.http.get<any[]>(`http://localhost:8082/api/reviews?productId=${id}`)
+    )).subscribe({
+      next: lists => lists.forEach((list, i) => this.productReviewsCount[ids[i]] = list.length),
+      error: err => console.error('Error loading reviews', err)
     });
   }
 }

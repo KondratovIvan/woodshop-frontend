@@ -1,10 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { Customer } from 'src/app/models/Customer.model';
-import { SecurityService } from 'src/app/security/security.service';
-import { HttpClient } from '@angular/common/http'
+import { Component, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AfterViewInit } from '@angular/core';
-
+import { HttpClient } from '@angular/common/http';
+import { SecurityService } from 'src/app/security/security.service';
 
 @Component({
   selector: 'app-profile',
@@ -12,84 +9,73 @@ import { AfterViewInit } from '@angular/core';
   styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent implements AfterViewInit {
-  constructor(public secService: SecurityService, private http: HttpClient, private router: Router) {}
-
   user = {
-  userName: this.secService.profile ? this.secService.profile.username : 'N/A',
-    firstName: this.secService.profile ? this.secService.profile.firstName : 'N/A',
-    lastName: this.secService.profile ? this.secService.profile.lastName : 'N/A',
-    email: this.secService.profile ? this.secService.profile.email : 'N/A',
+    userName: 'N/A',
+    firstName: 'N/A',
+    lastName: 'N/A',
+    email: 'N/A',
   };
-
   orders: any[] = [];
-
-
-  ngAfterViewInit(): void {
-    const checkProfile = setInterval(() => {
-      const profile = this.secService.profile;
-      if (profile) {
-        this.user.userName = profile.username || 'N/A';
-        this.user.firstName = profile.firstName || 'N/A';
-        this.user.lastName = profile.lastName || 'N/A';
-        this.user.email = profile.email || 'N/A';
-        this.getOrders();
-        clearInterval(checkProfile);
-      }
-    }, 100);
-  }
-
-  getOrders(): void {
-    const customerId = this.secService.profile?.id;
-    if (!customerId) return;
-
-    this.http
-      .get<any[]>(`http://localhost:8081/api/orders/customer/${customerId}`)
-      .subscribe(
-        (orders) => {
-          this.orders = orders.sort((a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          );
-          console.log('Orders fetched:', orders);
-        },
-        (error) => {
-          console.error('Failed to fetch orders:', error);
-          this.orders = [];
-        }
-      );
-  }
-
   isEditing = false;
   editName = '';
   editEmail = '';
 
+  constructor(
+    public secService: SecurityService,
+    private http: HttpClient,
+    private router: Router
+  ) {}
+
+  ngAfterViewInit(): void {
+    const interval = setInterval(() => {
+      if (this.secService.profile) {
+        const p = this.secService.profile;
+        this.user = {
+          userName: p.username || 'N/A',
+          firstName: p.firstName || 'N/A',
+          lastName: p.lastName || 'N/A',
+          email: p.email || 'N/A',
+        };
+        this.loadOrders();
+        clearInterval(interval);
+      }
+    }, 100);
+  }
+
+  private loadOrders(): void {
+    const id = this.secService.profile?.id;
+    if (!id) return;
+    this.http
+      .get<any[]>(`http://localhost:8081/api/orders/customer/${id}`)
+      .subscribe(
+        arr => (this.orders = arr.sort((a,b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )),
+        () => this.orders = []
+      );
+  }
+
   startEdit(): void {
-    console.log(this.secService.profile)
-    this.editName = (this.user.firstName + ' ' + this.user.lastName).trim();
-    this.editEmail = this.user.email ?? '';
+    this.editName = `${this.user.firstName} ${this.user.lastName}`.trim();
+    this.editEmail = this.user.email;
     this.isEditing = true;
   }
 
   saveEdit(): void {
-    const customerId = this.secService.profile?.id;
-    const names = this.editName.trim().split(/\s+/);
-    this.user.firstName = names.shift() || '';
-    this.user.lastName = names.join(' ') || '';
+    const id = this.secService.profile?.id;
+    if (!id) return;
+    const [first, ...rest] = this.editName.trim().split(/\s+/);
+    this.user.firstName = first;
+    this.user.lastName = rest.join(' ');
     this.user.email = this.editEmail.trim();
     this.isEditing = false;
 
-    const updateDto: any = {};
-    if (this.user.firstName) updateDto.firstname = this.user.firstName;
-    if (this.user.lastName) updateDto.lastname = this.user.lastName;
-    if (this.user.email) updateDto.email = this.user.email;
+    const dto: any = {};
+    if (this.user.firstName) dto.firstname = this.user.firstName;
+    if (this.user.lastName) dto.lastname = this.user.lastName;
+    if (this.user.email) dto.email = this.user.email;
 
-    this.http
-      .put(`http://localhost:8081/api/customers/${customerId}`, updateDto)
-      .subscribe({
-        next: () => console.log('User info successfully updated'),
-        error: (err) => console.error('Update failed:', err),
-      });
-
-    console.log('User info updated:', this.user);
+    this.http.put(`http://localhost:8081/api/customers/${id}`, dto).subscribe();
   }
 
   cancelEdit(): void {
@@ -97,23 +83,17 @@ export class ProfileComponent implements AfterViewInit {
   }
 
   deleteAccount(): void {
-    const confirmed = confirm('⚠️ Warning!\nYour account will be deleted forever. Are you sure?');
-  if (!confirmed) return;
-
-  const customerId = this.secService.profile?.id;
-  if (!customerId) return;
-
-
-    this.http.delete(`http://localhost:8081/api/customers/${customerId}`).subscribe({
-      next: () => {
-        console.log('Account successfully deleted!');
+    if (!confirm('⚠️ This will delete your account. Continue?')) return;
+    const id = this.secService.profile?.id;
+    if (!id) return;
+    this.http.delete(`http://localhost:8081/api/customers/${id}`)
+      .subscribe(() => {
         this.secService.logout();
         this.router.navigateByUrl('/home');
-      },
-      error: (err) => {
-        console.error('Error deleting account:', err);
-        alert('Error deleting account');
-      }
-    });
+      });
+  }
+
+  onAdmin(): void {
+    this.router.navigateByUrl('/admin-info-panel');
   }
 }

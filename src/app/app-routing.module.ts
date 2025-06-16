@@ -20,7 +20,7 @@ import { RefundComponent } from './components/footer/refund/refund.component';
 import { SupportComponent } from './components/footer/support/support.component';
 import { PartnerComponent } from './components/footer/partner/partner.component';
 import { ProfileComponent } from './components/profile/profile.component';
-
+import { AdminInfoPanelComponent } from './components/profile/admin-info-panel/admin-info-panel.component';
 
 const routes: Routes = [
   {
@@ -52,6 +52,8 @@ const routes: Routes = [
   { path: 'support',           component: SupportComponent },
   { path: 'partner',           component: PartnerComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard], data: { roles: ['USER', 'ADMIN'] }},
+  { path: 'admin-info-panel', component: AdminInfoPanelComponent ,canActivate:[AuthGuard]  , data : {roles : ['ADMIN']} }
+
 ];
 
 @NgModule({
