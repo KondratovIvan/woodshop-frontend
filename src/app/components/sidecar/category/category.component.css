@@ -58,3 +58,26 @@
   background-color: #8b5e3c;
   color: #fff;
 }
+
+.promo-section {
+  background-color: #2a9d8f;
+  padding: 12px 15px;
+  margin: 0 0 0px;
+  border-radius: 5px;
+  text-align: center;
+  transition: background-color 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.promo-section a {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  text-transform: uppercase;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.promo-section:hover {
+  background-color: #21867a;
+}

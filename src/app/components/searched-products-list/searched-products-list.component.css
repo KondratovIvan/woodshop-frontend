@@ -1,3 +1,185 @@
 .searched-products-container {
   flex: 1 1 auto;
 }
+
+/* === Баннер Charms === */
+.charms-banner {
+  text-align: center;
+  padding: 60px 20px;
+  margin-bottom: 30px;
+  background: url('/assets/charm-bg.jpg') center/cover no-repeat;
+  color: #ffffff;
+  border-radius: 8px;
+}
+.charms-banner h1 {
+  font-size: 48px;
+  margin: 0 0 10px;
+}
+.charms-banner p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+/* === Стили для дефолтного header === */
+.custom-breadcrumb {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px;
+  display: flex;
+  gap: 5px;
+}
+.custom-breadcrumb li a {
+  color: #2a2a2a;
+  text-decoration: none;
+}
+.custom-breadcrumb li .divider {
+  margin: 0 5px;
+}
+.custom-breadcrumb li.active {
+  color: #6c757d;
+}
+
+.page-title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+.page-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+.product-count {
+  font-size: 14px;
+  color: #6c757d;
+}
+.custom-hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 10px 0 20px;
+}
+
+.search-filters {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 30px;
+}
+.form-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sort-label,
+.form-group label {
+  font-weight: bold;
+  color: #333;
+}
+.sort-select {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.3s;
+}
+.sort-select:hover,
+.sort-select:focus {
+  border-color: #007bff;
+}
+input[type="range"]::-webkit-slider-thumb {
+  background-color: #2a9d8f;
+}
+input[type="range"]::-moz-range-thumb {
+  background-color: #2a9d8f;
+}
+
+.charm-theme .custom-breadcrumb li a,
+.charm-theme .custom-breadcrumb li.active {
+  color: #2a9d8f;
+}
+
+.charm-theme .page-title-container,
+.charm-theme form,
+.charm-theme .search-filters {
+  background-color: rgba(42, 157, 143, 0.05);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.charm-theme .page-title {
+  color: #2a9d8f;
+}
+
+.charm-theme .product-count {
+  color: #2a9d8f;
+}
+
+.charm-theme .custom-hr {
+  border-top-color: #2a9d8f;
+}
+
+.charm-theme .sort-label {
+  color: #2a9d8f;
+}
+
+.charm-theme .sort-select {
+  border-color: #2a9d8f;
+}
+
+.charm-theme .sort-select:hover,
+.charm-theme .sort-select:focus {
+  border-color: #21867a;
+}
+
+.charm-theme app-paggination .page-item.active .page-link {
+  background-color: #2a9d8f;
+  border-color: #2a9d8f;
+}
+
+.charm-theme .add-to-cart-btn,
+.charm-theme .price-badge {
+  background-color: #2a9d8f;
+  color: #fff;
+}
+
+.charms-banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: url('/assets/charm-bg.jpg') center/cover no-repeat;
+  border: 4px solid #2a9d8f;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+.charms-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(42, 157, 143, 0.6);
+}
+
+.charms-banner h1,
+.charms-banner p {
+  position: relative;
+  color: #ffffff;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.7);
+  margin: 0;
+}
+
+.charms-banner h1 {
+  font-size: 3rem; 
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.charms-banner p {
+  font-size: 1.25rem;
+  opacity: 0.9;
+}

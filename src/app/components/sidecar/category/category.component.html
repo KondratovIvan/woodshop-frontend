@@ -18,6 +18,9 @@
       </ng-container>
     </a>
   </div>
+  <div class="promo-section" (click)="onSearchByCategory('CHARM')">
+    <a>🧙‍♂️Miraculous Charms🧚</a>
+  </div>
   <ul id="sideManu" class="categories-container" *ngFor="let cat of categories">
     <li class="nav-item" (click)="onSearchByCategory(cat)">
       <a> {{ cat }}</a>

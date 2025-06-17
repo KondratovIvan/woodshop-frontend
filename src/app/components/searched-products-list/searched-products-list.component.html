@@ -1,14 +1,22 @@
-<div id="mainBody">
-  <div class="container">
-    <div class="row">
-      <app-sidecar></app-sidecar>
-      <div class="searched-products-container">
-        <ng-container *ngIf="productState$ | async as state" [ngSwitch]="state.dataState">
-          <ng-container *ngSwitchCase="ProductStateEnum.LOADING">
-            <h1>data is LOADING .....................................</h1>
+<ng-container *ngIf="productState$ | async as state">
+  <div
+    id="mainBody"
+    [ngClass]="{ 'charm-theme': state.searchCriteria?.category === 'CHARM' }"
+  >
+    <div class="container">
+      <div class="row">
+        <app-sidecar></app-sidecar>
+
+        <div class="searched-products-container">
+
+          <ng-container *ngIf="state.searchCriteria?.category === 'CHARM'; else defaultHeader">
+            <div class="charms-banner">
+              <h1>Preservation of soul and body</h1>
+              <p>Free for Ukrainian defenders 💚</p>
+            </div>
           </ng-container>
 
-          <ng-container *ngSwitchCase="ProductStateEnum.LOADED">
+          <ng-template #defaultHeader>
             <app-searched-products-list-header
               *ngIf="state.pageInfo"
               [productsNumber]="state.pageInfo.totalElements"
@@ -16,31 +24,22 @@
               [maxAvailablePrice]="maxAvailablePrice"
               (sortChanged)="onSortChanged($event)"
               (priceFilterChanged)="onPriceFilterChanged($event)"
-            ></app-searched-products-list-header>
+            >
+            </app-searched-products-list-header>
+          </ng-template>
 
-            <app-products-list [products]="sortedProducts"></app-products-list>
+          <ng-container [ngSwitch]="state.dataState">
+            <ng-container *ngSwitchCase="ProductStateEnum.LOADING">
+              <h1>Loading data…</h1>
+            </ng-container>
 
-            <ng-container [ngSwitch]="state.fetchMethode">
-              <ng-container *ngSwitchCase="fetchMethode.SEARCH_BY_KEYWORD">
-                <app-paggination
-                  *ngIf="state.products.length > 0"
-                  [pageInfo]="state.pageInfo"
-                  [fetchMethode]="state.fetchMethode"
-                  [payload]="state.searchCriteria?.keyword || ''"
-                ></app-paggination>
-              </ng-container>
-              <ng-container *ngSwitchCase="fetchMethode.SEARCH_BY_CATEGORY">
-                <app-paggination
-                  *ngIf="state.products.length > 0"
-                  [pageInfo]="state.pageInfo"
-                  [fetchMethode]="state.fetchMethode"
-                  [payload]="state.searchCriteria?.category || ''"
-                ></app-paggination>
-              </ng-container>
+            <ng-container *ngSwitchCase="ProductStateEnum.LOADED">
+              <app-products-list [products]="sortedProducts"></app-products-list>
             </ng-container>
           </ng-container>
-        </ng-container>
+
+        </div>
       </div>
     </div>
   </div>
-</div>
+</ng-container>
