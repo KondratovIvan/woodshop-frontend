@@ -24,8 +24,7 @@
               [maxAvailablePrice]="maxAvailablePrice"
               (sortChanged)="onSortChanged($event)"
               (priceFilterChanged)="onPriceFilterChanged($event)"
-            >
-            </app-searched-products-list-header>
+            ></app-searched-products-list-header>
           </ng-template>
 
           <ng-container [ngSwitch]="state.dataState">
@@ -35,6 +34,25 @@
 
             <ng-container *ngSwitchCase="ProductStateEnum.LOADED">
               <app-products-list [products]="sortedProducts"></app-products-list>
+
+              <ng-container [ngSwitch]="state.fetchMethode">
+                <ng-container *ngSwitchCase="fetchMethode.SEARCH_BY_KEYWORD">
+                  <app-paggination
+                    *ngIf="state.products.length > 0"
+                    [pageInfo]="state.pageInfo"
+                    [fetchMethode]="state.fetchMethode"
+                    [payload]="state.searchCriteria?.keyword || ''"
+                  ></app-paggination>
+                </ng-container>
+                <ng-container *ngSwitchCase="fetchMethode.SEARCH_BY_CATEGORY">
+                  <app-paggination
+                    *ngIf="state.products.length > 0"
+                    [pageInfo]="state.pageInfo"
+                    [fetchMethode]="state.fetchMethode"
+                    [payload]="state.searchCriteria?.category || ''"
+                  ></app-paggination>
+                </ng-container>
+              </ng-container>
             </ng-container>
           </ng-container>
 
